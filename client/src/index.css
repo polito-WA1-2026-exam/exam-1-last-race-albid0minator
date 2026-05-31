@@ -50,3 +50,133 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+/* Stile per i segmenti interattivi della mappa metropolitana (Planning Phase) */
+.react-flow__edge.map-edge-interactive {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  transition: opacity 0.15s, stroke-width 0.15s, stroke 0.15s;
+}
+
+.react-flow__edge.map-edge-interactive *,
+.react-flow__edge.map-edge-interactive .react-flow__edge-interaction {
+  pointer-events: stroke !important;
+  cursor: pointer !important;
+}
+
+/* Quando l'utente passa sopra il segmento in planning (anche sulla zona invisibile da 40px) */
+.react-flow__edge.map-edge-interactive:hover .react-flow__edge-path {
+  stroke: #cbd5e1 !important;
+  stroke-width: 4.5px !important;
+  opacity: 0.65 !important;
+  transition: stroke 0.15s, stroke-width 0.15s, opacity 0.15s;
+}
+
+/* Stile per i segmenti selezionati (Planning Phase) */
+.react-flow__edge.map-edge-selected {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+.react-flow__edge.map-edge-selected * {
+  cursor: pointer !important;
+}
+
+/* Stile per i segmenti statici (Setup Phase) - nessun hover, nessun cursore, nessuna interazione */
+.react-flow__edge.map-edge-static {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+.react-flow__edge.map-edge-static * {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+/* Utilità di transizione e hover per componenti premium */
+.transition-all {
+  transition: all 0.2s ease-in-out !important;
+}
+
+.hover-text-white:hover {
+  color: #ffffff !important;
+}
+
+/* Override autofill styling of browsers (preventing ugly yellow/grey backgrounds) */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #1e293b !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Merge input-group per eye toggle in login */
+.input-group-merge .form-control {
+  border-right: none !important;
+}
+
+.input-group-merge .btn {
+  border-left: none !important;
+  border-color: #dee2e6 !important;
+  background-color: #ffffff !important;
+  color: #64748b !important;
+  z-index: 4 !important;
+}
+
+.input-group-merge .btn:hover {
+  background-color: #f8fafc !important;
+  color: #334155 !important;
+}
+
+.input-group-merge .form-control:focus {
+  border-color: #86b7fe !important;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+}
+
+.input-group-merge .form-control:focus + .btn {
+  border-color: #86b7fe !important;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+  clip-path: inset(-10px -10px -10px 0);
+}
+
+/* Timer "Pauroso" Animations & Styles - LIGHT Theme Red */
+@keyframes text-pulse-red {
+  0%, 100% {
+    text-shadow: 0 0 4px rgba(220, 38, 38, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    text-shadow: 0 0 16px rgba(220, 38, 38, 0.7);
+    transform: scale(1.05);
+  }
+}
+
+.timer-text-pulse {
+  display: inline-block;
+  animation: text-pulse-red 0.8s infinite ease-in-out;
+}
+
+@keyframes horror-shake {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-1px, -2px); }
+  20% { transform: translate(-3px, 0px); }
+  30% { transform: translate(0px, 2px); }
+  40% { transform: translate(1px, -1px); }
+  50% { transform: translate(-1px, 2px); }
+  60% { transform: translate(-3px, 1px); }
+  70% { transform: translate(2px, 1px); }
+  80% { transform: translate(-1px, -1px); }
+  90% { transform: translate(2px, 2px); }
+}
+
+.timer-shake {
+  animation: horror-shake 0.15s infinite linear;
+}
+
+.timer-digits {
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 900;
+  letter-spacing: -2px;
+}

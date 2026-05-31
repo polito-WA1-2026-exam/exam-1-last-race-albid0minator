@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import GamePage from './pages/GamePage.jsx'
 import RankingPage from './pages/RankingPage.jsx'
+import EventsPage from './pages/EventsPage.jsx'
 
 function ProtectedRoute({ user, children }) {
   if (!user) {
@@ -56,6 +57,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage user={user} />} />
         <Route path="/login" element={<LoginPage onLogin={setUser} user={user} />} />
+        <Route path="/events" element={<EventsPage />} />
         <Route
           path="/game"
           element={
