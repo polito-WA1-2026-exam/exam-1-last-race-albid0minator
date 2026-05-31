@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { getLines, getStations, getStationLines } from '../dao.js';
-import { isLoggedIn } from '../middleware.js';
+import { getLines, getStations, getStationLines, getEvents } from '../db/dao.js';
+import { isLoggedIn } from '../middleware/index.js';
 
 const router = Router();
 
@@ -40,9 +40,18 @@ router.get('/network', isLoggedIn, async (req, res, next) => {
 
 router.get('/ranking', isLoggedIn, async (req, res, next) => {
   try {
-    const { getRanking } = await import('../dao.js');
+    const { getRanking } = await import('../db/dao.js');
     const ranking = await getRanking();
     return res.json(ranking);
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.get('/events', async (req, res, next) => {
+  try {
+    const events = await getEvents();
+    return res.json(events);
   } catch (err) {
     return next(err);
   }

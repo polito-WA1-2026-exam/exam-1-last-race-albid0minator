@@ -5,7 +5,7 @@ import morgan from 'morgan';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import crypto from 'node:crypto';
-import { dbGet } from './db.js';
+import { dbGet } from './db/db.js';
 import authRouter from './routes/auth.js';
 import networkRouter from './routes/network.js';
 import gameRouter from './routes/game.js';

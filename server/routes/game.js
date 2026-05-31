@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { body, validationResult } from 'express-validator';
-import { getStationLines, getEvents, createGame, addGameStep } from '../dao.js';
-import { isLoggedIn } from '../middleware.js';
+import { getStations, getStationLines, getEvents, createGame, addGameStep } from '../db/dao.js';
+import { isLoggedIn } from '../middleware/index.js';
 
 const router = Router();
 
@@ -24,8 +24,10 @@ function bfsDistance(adjacency, start, end) {
   return Infinity;
 }
 
-// Costruisce il grafo di adiacenza e le strutture di lookup dai dati di station_lines.
-function buildGraph(stationLines) {
+// Costruisce il grafo di adiacenza e le strutture di lookup.
+// Usa il flag is_interchange dalla stazione (non derivato dal conteggio linee)
+// per preservare le "trap" stations: su 2+ linee ma senza diritto di cambio.
+function buildGraph(stations, stationLines) {
   const adjacency = new Map();    // stationId → Set<neighborId>
   const segmentLines = new Map(); // "minId-maxId" → Set<lineId>
 
@@ -52,12 +54,9 @@ function buildGraph(stationLines) {
     }
   }
 
-  // Stazioni di interscambio: appaiono su più di una linea
-  const lineCount = new Map();
-  for (const sl of stationLines) {
-    lineCount.set(sl.station_id, (lineCount.get(sl.station_id) ?? 0) + 1);
-  }
-  const interchanges = new Set([...lineCount.entries()].filter(([, c]) => c > 1).map(([id]) => id));
+  const interchanges = new Set(
+    stations.filter(s => s.is_interchange).map(s => s.id)
+  );
 
   return { adjacency, segmentLines, interchanges };
 }
@@ -113,8 +112,8 @@ function validatePath(segments, startId, endId, segmentLines, interchanges) {
 // POST /api/games — avvia una nuova partita, assegna start e end
 router.post('/games', isLoggedIn, async (req, res, next) => {
   try {
-    const stationLines = await getStationLines();
-    const { adjacency, segmentLines, interchanges } = buildGraph(stationLines);
+    const [stations, stationLines] = await Promise.all([getStations(), getStationLines()]);
+    const { adjacency, segmentLines, interchanges } = buildGraph(stations, stationLines);
     const stationIds = new Set(stationLines.map(sl => sl.station_id));
     const pair = pickStartEnd(stationIds, adjacency);
     if (!pair) {
@@ -122,8 +121,8 @@ router.post('/games', isLoggedIn, async (req, res, next) => {
     }
     const [startId, endId] = pair;
 
-    // Salva la partita come pendente (score=0, valid=0 finché non viene sottomessa)
-    const gameId = await createGame(req.user.id, startId, endId, 0, 0);
+    // Salva la partita come pendente (valid=-1 = pending, distinto da valid=0 = invalida)
+    const gameId = await createGame(req.user.id, startId, endId, 0, -1);
 
     return res.status(201).json({ gameId, startStationId: startId, endStationId: endId });
   } catch (err) {
@@ -135,7 +134,7 @@ router.post('/games', isLoggedIn, async (req, res, next) => {
 router.post(
   '/games/:id/submit',
   isLoggedIn,
-  body('segments').isArray({ min: 1 }).withMessage('Percorso mancante.'),
+  body('segments').isArray().withMessage('Percorso mancante.'),
   body('segments.*.from').isInt({ min: 1 }).withMessage('Stazione non valida.'),
   body('segments.*.to').isInt({ min: 1 }).withMessage('Stazione non valida.'),
   async (req, res, next) => {
@@ -148,7 +147,7 @@ router.post(
     if (isNaN(gameId)) return res.status(400).json({ error: 'ID partita non valido.' });
 
     try {
-      const { dbGet, dbRun } = await import('../db.js');
+      const { dbGet, dbRun } = await import('../db/db.js');
 
       // Recupera la partita e verifica che appartenga all'utente corrente
       const game = await dbGet(
@@ -156,12 +155,12 @@ router.post(
         [gameId, req.user.id]
       );
       if (!game) return res.status(404).json({ error: 'Partita non trovata.' });
-      if (game.valid !== 0 || game.score !== 0) {
+      if (game.valid !== -1) {
         return res.status(409).json({ error: 'Partita già completata.' });
       }
 
-      const stationLines = await getStationLines();
-      const { segmentLines, interchanges } = buildGraph(stationLines);
+      const [stations, stationLines] = await Promise.all([getStations(), getStationLines()]);
+      const { segmentLines, interchanges } = buildGraph(stations, stationLines);
 
       const { segments } = req.body;
       const isValid = validatePath(segments, game.start_station_id, game.end_station_id, segmentLines, interchanges);
