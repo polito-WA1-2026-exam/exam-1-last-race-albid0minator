@@ -80,6 +80,7 @@ export default function NetworkMap({
   startStationId = null,
   endStationId = null,
   onSegmentClick = null,
+  height = 480,
 }) {
   // is_interchange è un flag esplicito sulla stazione (non derivato da stationLines).
   // Questo permette "trap" stations: su 2 linee ma senza diritto di cambio.
@@ -117,7 +118,7 @@ export default function NetworkMap({
       showInterchanges,
     },
     draggable: false,
-  })), [stations, interchangeSet, startStationId, endStationId]);
+  })), [stations, interchangeSet, startStationId, endStationId, showInterchanges]);
 
   const edges = useMemo(() => {
     const seen = new Set();
@@ -140,6 +141,8 @@ export default function NetworkMap({
         source: String(seg.from_station_id),
         target: String(seg.to_station_id),
         type: 'straight',
+        className: isSelected ? 'map-edge-selected' : (!showLines ? 'map-edge-interactive' : 'map-edge-static'),
+        interactionWidth: onSegmentClick ? 28 : 0,
         style: {
           stroke: isSelected ? '#f59e0b' : color,
           strokeWidth: isSelected ? 4 : 2.5,
@@ -157,7 +160,7 @@ export default function NetworkMap({
   }, [onSegmentClick]);
 
   return (
-    <div style={{ width: '100%', height: 480, borderRadius: 10, overflow: 'hidden', backgroundColor: '#f8fafc' }}>
+    <div style={{ width: '100%', height, borderRadius: 10, overflow: 'hidden', backgroundColor: '#f8fafc' }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
