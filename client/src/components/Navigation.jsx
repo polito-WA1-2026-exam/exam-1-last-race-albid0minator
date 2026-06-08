@@ -6,7 +6,7 @@ export default function Navigation({ user, onLogout }) {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <nav className="navbar navbar-expand navbar-dark py-3 px-4 shadow-sm border-bottom border-secondary border-opacity-25" style={{ backgroundColor: '#0f172a' }} id="global-navbar">
+    <nav className="navbar navbar-expand navbar-dark sticky-top py-2 px-4 shadow-sm border-bottom border-secondary border-opacity-25" style={{ backgroundColor: '#0f172a' }} id="global-navbar">
       <div className="container-fluid d-flex align-items-center justify-content-between">
         
         {/* Brand/Logo */}
@@ -18,9 +18,9 @@ export default function Navigation({ user, onLogout }) {
         {/* Unified Links Menu */}
         <div className="d-flex align-items-center gap-1" id="navbar-main-links">
           <Link 
-            className={`nav-link px-3 py-1.5 rounded-3 transition-all ${isActive('/events') ? 'text-white bg-secondary bg-opacity-25 fw-semibold' : 'text-white-50 hover-text-white'}`} 
+            className={`nav-link px-3 py-1.5 rounded-3 transition-all ${isActive('/events') ? 'text-white bg-secondary bg-opacity-25 fw-bold' : 'text-white-50 hover-text-white fw-medium'}`} 
             to="/events"
-            style={{ fontSize: '14.5px' }}
+            style={{ fontSize: '16.5px' }}
             id="nav-link-events"
           >
             Bonus & Malus
@@ -29,18 +29,27 @@ export default function Navigation({ user, onLogout }) {
           {user ? (
             <>
               <Link 
-                className={`nav-link px-3 py-1.5 rounded-3 transition-all ${isActive('/ranking') ? 'text-white bg-secondary bg-opacity-25 fw-semibold' : 'text-white-50 hover-text-white'}`} 
+                className={`nav-link px-3 py-1.5 rounded-3 transition-all ${isActive('/history') ? 'text-white bg-secondary bg-opacity-25 fw-bold' : 'text-white-50 hover-text-white fw-medium'}`} 
+                to="/history"
+                style={{ fontSize: '16.5px' }}
+                id="nav-link-history"
+              >
+                Le mie partite
+              </Link>
+              
+              <Link 
+                className={`nav-link px-3 py-1.5 rounded-3 transition-all ${isActive('/ranking') ? 'text-white bg-secondary bg-opacity-25 fw-bold' : 'text-white-50 hover-text-white fw-medium'}`} 
                 to="/ranking"
-                style={{ fontSize: '14.5px' }}
+                style={{ fontSize: '16.5px' }}
                 id="nav-link-ranking"
               >
                 Classifica
               </Link>
               
               <Link 
-                className={`nav-link px-3 py-1.5 rounded-3 transition-all ${isActive('/game') ? 'text-white bg-secondary bg-opacity-25 fw-semibold' : 'text-white-50 hover-text-white'}`} 
+                className={`nav-link px-3 py-1.5 rounded-3 transition-all ${isActive('/game') ? 'text-white bg-secondary bg-opacity-25 fw-bold' : 'text-white-50 hover-text-white fw-medium'}`} 
                 to="/game"
-                style={{ fontSize: '14.5px' }}
+                style={{ fontSize: '16.5px' }}
                 id="nav-link-game"
               >
                 Gioca
@@ -48,10 +57,10 @@ export default function Navigation({ user, onLogout }) {
 
               {/* Logout button styled exactly like a nav link */}
               <button 
-                className="nav-link px-3 py-1.5 rounded-3 transition-all text-white-50 hover-text-white border-0 bg-transparent text-start" 
+                className="nav-link px-3 py-1.5 rounded-3 transition-all text-white-50 hover-text-white fw-medium border-0 bg-transparent text-start" 
                 type="button" 
                 onClick={onLogout}
-                style={{ fontSize: '14.5px' }}
+                style={{ fontSize: '16.5px' }}
                 id="btn-logout"
               >
                 Esci
@@ -59,9 +68,9 @@ export default function Navigation({ user, onLogout }) {
             </>
           ) : (
             <Link 
-              className={`nav-link px-3 py-1.5 rounded-3 transition-all ${isActive('/login') ? 'text-white bg-secondary bg-opacity-25 fw-semibold' : 'text-white-50 hover-text-white'}`} 
+              className={`nav-link px-3 py-1.5 rounded-3 transition-all ${isActive('/login') ? 'text-white bg-secondary bg-opacity-25 fw-bold' : 'text-white-50 hover-text-white fw-medium'}`} 
               to="/login"
-              style={{ fontSize: '14.5px' }}
+              style={{ fontSize: '16.5px' }}
               id="btn-login"
             >
               Accedi

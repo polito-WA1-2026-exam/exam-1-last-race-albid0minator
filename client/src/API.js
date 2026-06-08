@@ -78,6 +78,11 @@ export async function getRanking() {
   return request('/api/ranking')
 }
 
+// --- Partite utente ---
+export async function getGames(page = 1, limit = 25) {
+  return request(`/api/games?page=${page}&limit=${limit}`)
+}
+
 // --- Eventi ---
 export async function getEvents() {
   return request('/api/events')

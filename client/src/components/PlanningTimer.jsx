@@ -3,51 +3,56 @@ export default function PlanningTimer({ timeLeft, totalSeconds = 90 }) {
   const isPanic = timeLeft <= 30;
   const isCritical = timeLeft <= 10;
 
-  let alertText = "TEMPO RIMANENTE";
-  let statusDesc = "Pianifica il tuo tragitto sulla mappa";
-  let containerClass = "";
+  let timerColor = '#475569'; // default slate-600
+  let containerClass = "d-flex align-items-center gap-2 border rounded-pill px-3 py-1.5 bg-white shadow-sm";
+  let statusDesc = "Pianifica il tuo tragitto";
 
   if (isCritical) {
-    alertText = " CRITICO! ";
-    statusDesc = " CORRI! IL TEMPO STA SCADENDO! ";
-    containerClass = "timer-shake";
+    timerColor = '#dc2626'; // red-600
+    containerClass += " border-danger timer-shake";
+    statusDesc = "CORRI!";
   } else if (isPanic) {
-    alertText = " IN SCADENZA ";
-    statusDesc = "Sbrigati, invio automatico imminente!";
+    timerColor = '#d97706'; // amber-600
+    containerClass += " border-warning";
+    statusDesc = "In scadenza!";
+  } else {
+    containerClass += " border-light";
   }
 
   return (
-    <div className={`text-center py-3 ${containerClass}`} style={{ transition: 'all 0.3s ease' }}>
-      {/* Alert Header Label */}
-      <div className="mb-1">
-        <span className="fs-6 text-uppercase fw-bold text-secondary tracking-wider d-block">
-          {alertText}
-        </span>
-      </div>
-
-      {/* Red Monospace Digits */}
+    <div 
+      className={containerClass} 
+      style={{ transition: 'all 0.3s ease' }}
+      title={statusDesc}
+    >
+      <span className="fs-6 text-secondary d-none d-sm-inline">
+        ⏱️
+      </span>
       <div 
-        className={`timer-digits display-1 my-1 fw-bold ${isPanic ? 'timer-text-pulse' : ''}`} 
-        style={{ color: '#dc2626' }}
+        className={`timer-digits fs-5 fw-bold mb-0 lh-1 ${isPanic ? 'timer-text-pulse' : ''}`} 
+        style={{ color: timerColor }}
       >
         {timeLeft}s
       </div>
-
-      {/* Instructions / Warnings */}
-      <div className="mt-2 px-2 fw-semibold text-secondary" style={{ fontSize: '14px' }}>
-        {statusDesc}
-      </div>
-
-      {/* Red Progress Bar */}
-      <div className="w-100 bg-light border rounded-pill mt-3 overflow-hidden" style={{ height: '8px' }}>
+      <div className="bg-light rounded-pill overflow-hidden" style={{ height: '6px', width: '50px' }}>
         <div 
-          className="bg-danger h-100 transition-all"
+          className="h-100 transition-all"
           style={{ 
             width: `${(timeLeft / totalSeconds) * 100}%`,
+            backgroundColor: timerColor,
             transition: 'width 1s linear'
           }}
         />
       </div>
+      {(isPanic || isCritical) && (
+        <span 
+          className="fw-bold text-uppercase d-none d-md-inline" 
+          style={{ color: timerColor, fontSize: '10px', letterSpacing: '0.5px' }}
+        >
+          {statusDesc}
+        </span>
+      )}
     </div>
   );
 }
+

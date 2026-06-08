@@ -35,6 +35,7 @@ export default function RankingPage() {
             <tr>
               <th style={{ width: 48 }}>#</th>
               <th>Giocatore</th>
+              <th className="text-end">Partite valide</th>
               <th className="text-end">Miglior punteggio</th>
             </tr>
           </thead>
@@ -43,6 +44,7 @@ export default function RankingPage() {
               <tr key={entry.user_id}>
                 <td className="fw-bold">{i + 1}</td>
                 <td>{entry.name}</td>
+                <td className="text-end text-muted">{entry.games_played}</td>
                 <td className="text-end fw-bold">{entry.best_score} 🪙</td>
               </tr>
             ))}

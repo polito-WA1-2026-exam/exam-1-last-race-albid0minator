@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage.jsx'
 import GamePage from './pages/GamePage.jsx'
 import RankingPage from './pages/RankingPage.jsx'
 import EventsPage from './pages/EventsPage.jsx'
+import HistoryPage from './pages/HistoryPage.jsx'
 
 function ProtectedRoute({ user, children }) {
   if (!user) {
@@ -71,6 +72,14 @@ export default function App() {
           element={
             <ProtectedRoute user={user}>
               <RankingPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/history"
+          element={
+            <ProtectedRoute user={user}>
+              <HistoryPage />
             </ProtectedRoute>
           }
         />

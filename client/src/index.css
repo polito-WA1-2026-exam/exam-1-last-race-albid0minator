@@ -53,33 +53,20 @@ code {
 
 /* Stile per i segmenti interattivi della mappa metropolitana (Planning Phase) */
 .react-flow__edge.map-edge-interactive {
-  pointer-events: auto !important;
-  cursor: pointer !important;
   transition: opacity 0.15s, stroke-width 0.15s, stroke 0.15s;
 }
 
 .react-flow__edge.map-edge-interactive *,
-.react-flow__edge.map-edge-interactive .react-flow__edge-interaction {
-  pointer-events: stroke !important;
+.react-flow__edge.map-edge-selected * {
   cursor: pointer !important;
 }
 
-/* Quando l'utente passa sopra il segmento in planning (anche sulla zona invisibile da 40px) */
+/* Quando l'utente passa sopra il segmento in planning */
 .react-flow__edge.map-edge-interactive:hover .react-flow__edge-path {
   stroke: #cbd5e1 !important;
   stroke-width: 4.5px !important;
   opacity: 0.65 !important;
   transition: stroke 0.15s, stroke-width 0.15s, opacity 0.15s;
-}
-
-/* Stile per i segmenti selezionati (Planning Phase) */
-.react-flow__edge.map-edge-selected {
-  pointer-events: auto !important;
-  cursor: pointer !important;
-}
-
-.react-flow__edge.map-edge-selected * {
-  cursor: pointer !important;
 }
 
 /* Stile per i segmenti statici (Setup Phase) - nessun hover, nessun cursore, nessuna interazione */
@@ -179,4 +166,19 @@ input:-webkit-autofill:active {
   font-family: 'Courier New', Courier, monospace;
   font-weight: 900;
   letter-spacing: -2px;
+}
+
+@keyframes step-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.step-fade-in {
+  animation: step-slide-in 0.3s ease-out forwards;
 }

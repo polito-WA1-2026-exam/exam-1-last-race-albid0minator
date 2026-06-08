@@ -1,57 +1,45 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import NetworkMap from '../components/NetworkMap.jsx';
 import PlanningTimer from '../components/PlanningTimer.jsx';
+import GameAudio from '../components/GameAudio.jsx';
+import SegmentList from '../components/SegmentList.jsx';
 import { getNetwork, createGame, submitGame } from '../API.js';
 
 const PLANNING_SECONDS = 90;
 
+function resultMessage(score, valid) {
+  if (!valid) return { text: 'Il percorso era sbagliato — hai perso tutto.', cls: 'text-danger' };
+  if (score > 15) return { text: 'Ottimo percorso! 🏆', cls: 'text-success fw-bold' };
+  if (score >= 8)  return { text: 'Buon risultato!', cls: 'text-primary' };
+  if (score >= 1)  return { text: 'Potevi fare meglio...', cls: 'text-warning' };
+  return { text: 'Purtroppo hai terminato le monete.', cls: 'text-danger' };
+}
+
 export default function GamePage() {
-  // phase determina quale schermata renderizzare.
-  // Inizia a 'loading' anziché 'setup' perché il setup richiede i dati dal server
-  // e non possiamo mostrare nulla finché non arrivano.
   const [phase, setPhase] = useState('loading');
   const [error, setError] = useState(null);
 
-  // Dati della rete e della partita corrente.
-  // Separati perché la rete è statica (stessa per tutta la sessione),
-  // mentre gameId/start/end variano ad ogni nuova partita.
   const [network, setNetwork] = useState(null);
   const [gameId, setGameId] = useState(null);
   const [startStationId, setStartStationId] = useState(null);
   const [endStationId, setEndStationId] = useState(null);
 
-  // Segmenti selezionati dall'utente nella fase Planning.
   const [selectedSegments, setSelectedSegments] = useState([]);
-
-  // Timer countdown per la fase Planning.
+  const [hoveredSegment, setHoveredSegment] = useState(null);
   const [timeLeft, setTimeLeft] = useState(PLANNING_SECONDS);
-
-  // Risposta del server dopo la submit: { valid, steps, finalScore }
   const [result, setResult] = useState(null);
-
-  // Quanti passi dell'esecuzione sono stati rivelati all'utente.
-  // I passi vengono mostrati uno alla volta: l'utente clicca "Avanti" per vedere il successivo.
   const [visibleSteps, setVisibleSteps] = useState(0);
 
   // ── PATTERN "LATEST REF" ──────────────────────────────────────────────
-  // Il problema: setInterval cattura le variabili chiuse al momento della sua creazione.
-  // Se leggiamo `selectedSegments` dentro il callback del timer, leggeremo sempre il valore
-  // iniziale (stale closure), non quello corrente.
-  //
-  // Soluzione: aggiorniamo un ref sincronamente ad ogni render.
-  // I ref non causano re-render e sono sempre accessibili nel loro valore corrente.
   const selectedSegmentsRef = useRef([]);
   const handleSubmitRef = useRef(null);
 
-  // Aggiornamento dei ref dopo ogni render (non durante il render, per soddisfare le regole React 19).
   useEffect(() => {
     selectedSegmentsRef.current = selectedSegments;
     handleSubmitRef.current = handleSubmit;
   });
 
   // ── INIZIALIZZAZIONE ──────────────────────────────────────────────────
-  // loadGameData contiene solo setState chiamate asincrone (dopo await),
-  // quindi è sicuro chiamarla dall'effect senza violare le regole React 19.
   async function loadGameData() {
     try {
       const [net, game] = await Promise.all([getNetwork(), createGame()]);
@@ -66,27 +54,22 @@ export default function GamePage() {
     }
   }
 
-  // initGame resetta lo stato in modo sincrono e poi avvia il fetch.
-  // Chiamata dai bottoni "Nuova partita" e "Riprova" (non dall'effect).
   function initGame() {
     setPhase('loading');
     setError(null);
     setSelectedSegments([]);
+    setHoveredSegment(null);
     setResult(null);
     setVisibleSteps(0);
     void loadGameData();
   }
 
-  // Al montaggio la fase è già 'loading' (stato iniziale), basta avviare il fetch.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadGameData();
   }, []);
 
   // ── TIMER PLANNING ────────────────────────────────────────────────────
-  // L'effect si attiva solo quando phase diventa 'planning' (grazie alla dipendenza [phase]).
-  // Il cleanup (return) cancella l'interval se:
-  //   a) l'utente clicca "Conferma" prima dello scadere (phase cambia → effect si riesegue)
-  //   b) il componente si smonta
   useEffect(() => {
     if (phase !== 'planning') return;
 
@@ -94,8 +77,6 @@ export default function GamePage() {
       setTimeLeft(prev => {
         if (prev <= 1) {
           clearInterval(interval);
-          // handleSubmitRef.current è sempre aggiornato ad ogni render (vedi sotto),
-          // quindi richiamiamo la versione più recente senza stale closure.
           handleSubmitRef.current?.();
           return 0;
         }
@@ -106,10 +87,42 @@ export default function GamePage() {
     return () => clearInterval(interval);
   }, [phase]);
 
+  // ── AUTOMATIC EXECUTION PLAYBACK ──────────────────────────────────────
+  useEffect(() => {
+    if (phase !== 'execution' || !result) return;
+
+    if (!result.valid) {
+      // Se invalido, aspetta 2 secondi e passa alla schermata finale
+      const timer = setTimeout(() => {
+        setPhase('result');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+
+    // Se valido, rivela un passo alla volta ogni 0.5 secondi (500ms)
+    if (visibleSteps < result.steps.length) {
+      const timer = setTimeout(() => {
+        setVisibleSteps(v => v + 1);
+      }, 500);
+      return () => clearTimeout(timer);
+    } else {
+      // Quando tutti i passi sono visibili, aspetta 1 secondo e passa a 'result'
+      const timer = setTimeout(() => {
+        setPhase('result');
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [phase, result, visibleSteps]);
+
+  const stationById = useMemo(
+    () => new Map((network?.stations ?? []).map(station => [station.id, station])),
+    [network?.stations]
+  );
+
+  const stationName = id => stationById.get(id)?.name ?? `#${id}`;
+
   // ── SUBMIT PERCORSO ───────────────────────────────────────────────────
   async function handleSubmit() {
-    // Leggiamo i segmenti tramite ref, non da state, perché questa funzione
-    // viene chiamata anche dal timer (che avrebbe una closure stale sullo state).
     const segments = selectedSegmentsRef.current;
     setPhase('submitting');
     setError(null);
@@ -119,48 +132,45 @@ export default function GamePage() {
       setVisibleSteps(0);
       setPhase('execution');
     } catch (err) {
-      // Errore di rete o del server: torniamo a un fase di errore invece di bloccarci silenziosamente.
       setError(err.message);
       setPhase('error');
     }
   }
 
   // ── GESTIONE SEGMENTI ─────────────────────────────────────────────────
-  // Toggle: click su un segmento già selezionato lo deseleziona, click su uno nuovo lo aggiunge.
-  // Usiamo la forma funzionale di setSelectedSegments per evitare di chiudere su un valore stale.
-  function handleSegmentClick(seg) {
+  function handleSegmentSelect(seg) {
     setSelectedSegments(prev => {
-      // Verifica se il segmento è già presente (in qualsiasi direzione)
-      const exists = prev.some(s => 
-        (s.from === seg.from && s.to === seg.to) || 
-        (s.from === seg.to   && s.to === seg.from)
+      const from = seg.from_station_id;
+      const to = seg.to_station_id;
+
+      // Se il segmento è già selezionato, lo deseleziona (lo rimuove dal percorso)
+      const isAlreadySelected = prev.some(
+        s => (s.from === from && s.to === to) || (s.from === to && s.to === from)
       );
-      
-      if (exists) {
-        // Rimuove il segmento (in qualsiasi direzione)
-        return prev.filter(s => 
-          !((s.from === seg.from && s.to === seg.to) || 
-            (s.from === seg.to   && s.to === seg.from))
+      if (isAlreadySelected) {
+        return prev.filter(
+          s => !((s.from === from && s.to === to) || (s.from === to && s.to === from))
         );
       }
-      
-      // Determina l'orientamento corretto basandoci sull'ultimo nodo del percorso corrente
-      let orientedSeg = { from: seg.from, to: seg.to };
-      if (prev.length === 0) {
-        // Se è il primo segmento, deve partire da startStationId
-        if (seg.to === startStationId) {
-          orientedSeg = { from: seg.to, to: seg.from };
-        }
+
+      const currentStation = prev.length === 0 ? startStationId : prev[prev.length - 1].to;
+
+      let orientedSeg;
+      if (from === currentStation) {
+        orientedSeg = { from, to };
+      } else if (to === currentStation) {
+        orientedSeg = { from: to, to: from };
       } else {
-        // Altrimenti deve attaccarsi all'ultimo nodo del segmento precedente
-        const lastStation = prev[prev.length - 1].to;
-        if (seg.to === lastStation) {
-          orientedSeg = { from: seg.to, to: seg.from };
-        }
+        orientedSeg = { from, to };
       }
-      
-      return [...prev, orientedSeg];
+
+      const next = [...prev, orientedSeg];
+      return next;
     });
+  }
+
+  function undoLastSegment() {
+    setSelectedSegments(prev => prev.slice(0, -1));
   }
 
   // ── RENDERING ─────────────────────────────────────────────────────────
@@ -182,39 +192,63 @@ export default function GamePage() {
     );
   }
 
-  // Shorthand per trovare il nome di una stazione dato il suo ID.
-  const stationName = id => network.stations.find(s => s.id === id)?.name ?? `#${id}`;
+
+  // Stazione evidenziata come "ultimo nodo del percorso corrente"
+  const currentNodeId = selectedSegments.length === 0
+    ? startStationId
+    : selectedSegments[selectedSegments.length - 1].to;
+
+  // Monete correnti visibili nella fase execution
+  const currentCoins = visibleSteps === 0 ? 20 : result?.steps[visibleSteps - 1].coinsAfter;
+
+  const compactLayout = phase === 'setup' || phase === 'planning';
+  const gameViewportHeight = 'calc(100dvh - 88px)';
 
   return (
-    <div className="container-fluid px-4 py-4" style={{ maxWidth: 1400 }}>
+    <div
+      className="container-fluid px-4 pt-2 pb-3 d-flex flex-column"
+      style={{
+        maxWidth: 1400,
+        minHeight: compactLayout ? gameViewportHeight : 'auto',
+        height: compactLayout ? gameViewportHeight : 'auto',
+        overflow: compactLayout ? 'hidden' : 'visible',
+      }}
+    >
 
-      {/* ── SETUP (Fase 1) ────────────────────────────────────────────────
-          Mappa completa con linee visibili. L'utente studia la rete prima che
-          le informazioni vengano nascoste nella fase successiva.
-      */}
+      {/* ── SETUP (Fase 1) ──────────────────────────────────────────────── */}
       {phase === 'setup' && (
-        <div>
-          <h4 className="mb-1">Fase 1 — Setup</h4>
-          <p className="text-muted mb-3">
-            Studia la mappa. Tutte le linee sono visibili. Nota le stazioni di interscambio.
-          </p>
-          <NetworkMap
-            stations={network.stations}
-            stationLines={network.stationLines}
-            segments={network.segments}
-            lines={network.lines}
-            showLines={true}
-            startStationId={startStationId}
-            endStationId={endStationId}
-            height={620}
-          />
-          <div className="mt-3 d-flex gap-3 align-items-center flex-wrap">
+        <div className="d-flex flex-column flex-grow-1" style={{ minHeight: 0, overflow: 'hidden' }}>
+          <div className="flex-shrink-0">
+            <h4 className="mb-1">Fase 1 — Setup</h4>
+            <p className="text-muted mb-2">
+              Studia la mappa. Tutte le linee sono visibili. Quando sei pronto, inizia il planning:
+              avrai <strong>90 secondi</strong> per costruire il percorso con le linee nascoste.
+            </p>
+          </div>
+
+          <div className="flex-grow-1" style={{ minHeight: 0 }}>
+            <NetworkMap
+              stations={network.stations}
+              stationLines={network.stationLines}
+              segments={network.segments}
+              lines={network.lines}
+              showLines={true}
+              startStationId={startStationId}
+              endStationId={endStationId}
+              height="100%"
+            />
+          </div>
+
+          <div className="mt-2 d-flex gap-3 align-items-center flex-wrap flex-shrink-0">
             <div className="d-flex gap-2 flex-wrap">
               <span className="badge bg-success">Partenza</span>
               <span className="badge bg-danger">Arrivo</span>
             </div>
-            <button className="btn btn-primary ms-auto" onClick={() => { setTimeLeft(PLANNING_SECONDS); setPhase('planning'); }}>
-              Sono pronto →
+            <button
+              className="btn btn-primary ms-auto"
+              onClick={() => { setTimeLeft(PLANNING_SECONDS); setPhase('planning'); }}
+            >
+              Sono pronto — inizia il timer →
             </button>
           </div>
         </div>
@@ -222,25 +256,39 @@ export default function GamePage() {
 
       {/* ── PLANNING (Fase 2) ─────────────────────────────────────────────
           Le linee sono nascoste. L'utente ha 90 secondi per costruire il percorso.
-          showLines={false}: la NetworkMap mostra solo stazioni e segmenti, senza colori linea.
+          In Planning la NetworkMap mostra solo stazioni e nomi: i segmenti si scelgono dalla lista.
           showInterchanges={false}: non rivelare le stazioni di interscambio (informazione utile).
       */}
       {phase === 'planning' && (
-        <div>
-          {/* Top header instructions */}
-          <div className="mb-4">
-            <h4 className="mb-1">Fase 2 — Planning</h4>
-            <p className="text-muted mb-0">
-              Le linee sono nascoste. Seleziona i segmenti sulla mappa per costruire il percorso.
-            </p>
+        <div className="d-flex flex-column flex-grow-1" style={{ minHeight: 0, overflow: 'hidden' }}>
+          {/* Top header instructions with audio control & timer */}
+          <div className="mb-2 d-flex justify-content-between align-items-center flex-wrap gap-3 py-2 px-3 bg-white rounded shadow-sm border">
+            <div>
+              <h4 className="mb-1 text-primary fw-bold">Fase 2 — Planning</h4>
+              <p className="text-muted mb-0 small">
+                Le linee sono nascoste. Scegli i segmenti dalla lista, in ordine, per costruire il percorso.
+              </p>
+            </div>
+            <div className="d-flex align-items-center gap-3">
+              <PlanningTimer timeLeft={timeLeft} totalSeconds={PLANNING_SECONDS} />
+              <GameAudio phase={phase} />
+            </div>
           </div>
 
-          <div className="row g-4">
-            {/* Left Column: Insertion zone */}
-            <div className="col-lg-8 col-md-7">
-              <div className="d-flex flex-column h-100">
-                <div className="card shadow-sm border-0 mb-3 overflow-hidden">
-                  <div className="card-body p-0">
+          <div
+            className="flex-grow-1"
+            style={{
+              minHeight: 0,
+              overflow: 'hidden',
+              display: 'grid',
+              gridTemplateColumns: 'minmax(0, 2.2fr) minmax(320px, 1fr)',
+              gap: '1rem',
+            }}
+          >
+            <div className="d-flex" style={{ minHeight: 0 }}>
+              <div className="d-flex flex-column flex-grow-1" style={{ minHeight: 0 }}>
+                <div className="card shadow-sm border-0 mb-2 overflow-hidden flex-grow-1 d-flex flex-column" style={{ minHeight: 0 }}>
+                  <div className="card-body p-0 flex-grow-1 d-flex flex-column" style={{ minHeight: 0 }}>
                     <NetworkMap
                       stations={network.stations}
                       stationLines={network.stationLines}
@@ -248,25 +296,31 @@ export default function GamePage() {
                       lines={network.lines}
                       showLines={false}
                       showInterchanges={false}
-                      selectedSegments={selectedSegments}
                       startStationId={startStationId}
                       endStationId={endStationId}
-                      onSegmentClick={handleSegmentClick}
-                      height={540}
+                      currentNodeId={currentNodeId}
+                      height="100%"
+                      selectedSegments={selectedSegments}
+                      hoveredSegment={hoveredSegment}
                     />
                   </div>
                 </div>
 
-                <div className="d-flex gap-2 align-items-center justify-content-between flex-wrap">
+                <div className="d-flex gap-2 align-items-center justify-content-between flex-wrap" style={{ flexShrink: 0 }}>
                   <div className="d-flex align-items-center gap-2">
                     <span className="badge bg-secondary py-2 px-3 fs-6">
                       Segmenti: <strong>{selectedSegments.length}</strong>
                     </span>
                     {selectedSegments.length > 0 && (
-                      <button className="btn btn-outline-danger btn-sm" onClick={() => setSelectedSegments([])}>
+                      <button className="btn btn-outline-secondary btn-sm" onClick={undoLastSegment}>
+                        Annulla ultimo
+                      </button>
+                    )}
+                    {selectedSegments.length > 0 && (
+                      <button className="btn btn-outline-danger btn-sm" onClick={() => { setSelectedSegments([]); }}>
                         Azzera percorso
                       </button>
-                  )}
+                    )}
                   </div>
                   <button className="btn btn-primary ms-auto" onClick={handleSubmit}>
                     Conferma percorso →
@@ -275,48 +329,60 @@ export default function GamePage() {
               </div>
             </div>
 
-            {/* Right Column: Clean Timer & Recap Panel */}
-            <div className="col-lg-4 col-md-5">
-              <div className="d-flex flex-column gap-4">
-                {/* PlanningTimer Component (No box design, just clean text layout) */}
-                <PlanningTimer timeLeft={timeLeft} totalSeconds={PLANNING_SECONDS} />
-
-                {/* Journey Recap Card */}
-                <div className="card shadow-sm border-0 bg-white p-3">
-                  <h5 className="border-bottom pb-2 mb-3 text-secondary fw-bold">Riepilogo Percorso</h5>
-                  <div className="d-flex flex-column gap-3">
-                    <div>
-                      <small className="text-muted d-block text-uppercase fw-bold">Partenza</small>
+            <div className="d-flex" style={{ minHeight: 0 }}>
+              <div className="d-flex flex-column gap-2 flex-grow-1" style={{ minHeight: 0, overflow: 'hidden' }}>
+                {/* Indicazione Partenza e Destinazione */}
+                <div className="card shadow-sm border-0" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <div className="card-body py-2 px-3">
+                    <div className="d-flex align-items-center justify-content-center gap-3">
                       <div className="d-flex align-items-center gap-2">
-                        <span className="badge rounded-circle bg-success p-2" style={{ width: 10, height: 10 }} />
-                        <strong className="text-dark fs-6">{stationName(startStationId)}</strong>
+                        <span className="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold text-white bg-success shadow-sm" style={{ width: '22px', height: '22px', fontSize: '9px', minWidth: '22px' }}>
+                          DA
+                        </span>
+                        <span className="text-secondary fw-bold" style={{ fontSize: '13.5px' }}>
+                          {stationName(startStationId)}
+                        </span>
                       </div>
-                    </div>
-                    
-                    <div className="ps-1 text-muted fs-5">↓</div>
-                    
-                    <div>
-                      <small className="text-muted d-block text-uppercase fw-bold">Arrivo</small>
+                      
+                      <span className="text-muted fw-bold" style={{ fontSize: '14px' }}>➔</span>
+                      
                       <div className="d-flex align-items-center gap-2">
-                        <span className="badge rounded-circle bg-danger p-2" style={{ width: 10, height: 10 }} />
-                        <strong className="text-dark fs-6">{stationName(endStationId)}</strong>
+                        <span className="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold text-white bg-danger shadow-sm" style={{ width: '22px', height: '22px', fontSize: '9px', minWidth: '22px' }}>
+                          A
+                        </span>
+                        <span className="text-secondary fw-bold" style={{ fontSize: '13.5px' }}>
+                          {stationName(endStationId)}
+                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
+
+                {/* Lista segmenti da selezionare */}
+                <SegmentList
+                  segments={network.segments}
+                  selectedSegments={selectedSegments}
+                  stationName={stationName}
+                  onSegmentSelect={handleSegmentSelect}
+                  onSegmentHover={setHoveredSegment}
+                />
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* ── EXECUTION (Fase 3) ────────────────────────────────────────────
-          I passi vengono rivelati uno alla volta tramite "Avanti".
-          Se il percorso è invalido, il server restituisce valid=false e steps=[].
-      */}
+      {/* ── EXECUTION (Fase 3) ──────────────────────────────────────────── */}
       {phase === 'execution' && result && (
         <div>
-          <h4 className="mb-3">Fase 3 — Esecuzione</h4>
+          <div className="d-flex align-items-center gap-3 mb-3 flex-wrap">
+            <h4 className="mb-0">Fase 3 — Esecuzione</h4>
+            {result.valid && (
+              <span className="badge bg-primary fs-6 ms-auto">
+                🪙 {currentCoins} monete
+              </span>
+            )}
+          </div>
 
           {!result.valid && (
             <div className="alert alert-danger mb-3">
@@ -326,9 +392,8 @@ export default function GamePage() {
 
           {result.valid && (
             <>
-              {/* Mostra solo i passi già rivelati (slice fino a visibleSteps) */}
               {result.steps.slice(0, visibleSteps).map((step, i) => (
-                <div key={i} className="card mb-2">
+                <div key={i} className="card mb-2 step-fade-in">
                   <div className="card-body py-2 d-flex align-items-center gap-2 flex-wrap">
                     <span>
                       <strong>Passo {step.stepOrder}:</strong>{' '}
@@ -344,34 +409,36 @@ export default function GamePage() {
                 </div>
               ))}
 
-              {/* Pulsante per rivelare il passo successivo, o per passare al risultato */}
-              {visibleSteps < result.steps.length ? (
-                <button
-                  className="btn btn-outline-primary mt-2"
-                  onClick={() => setVisibleSteps(v => v + 1)}
-                >
-                  Avanti →
-                </button>
-              ) : (
-                <button className="btn btn-primary mt-2" onClick={() => setPhase('result')}>
-                  Vedi risultato →
-                </button>
-              )}
+              <div className="d-flex align-items-center gap-3 mt-3">
+                {visibleSteps < result.steps.length ? (
+                  <>
+                    <div className="spinner-border spinner-border-sm text-primary" role="status">
+                      <span className="visually-hidden">Simulazione in corso...</span>
+                    </div>
+                    <span className="text-muted">Esecuzione in corso...</span>
+                    <button className="btn btn-outline-secondary btn-sm ms-auto" onClick={() => setPhase('result')}>
+                      Salta animazione →
+                    </button>
+                  </>
+                ) : (
+                  <span className="text-muted ms-auto">Completato! Reindirizzamento...</span>
+                )}
+              </div>
             </>
           )}
 
           {!result.valid && (
-            <button className="btn btn-primary mt-2" onClick={() => setPhase('result')}>
-              Vedi risultato →
-            </button>
+            <div className="d-flex align-items-center gap-3 mt-3">
+              <span className="text-muted">Reindirizzamento...</span>
+              <button className="btn btn-outline-secondary btn-sm ms-auto" onClick={() => setPhase('result')}>
+                Salta →
+              </button>
+            </div>
           )}
         </div>
       )}
 
-      {/* ── RESULT (Fase 4) ───────────────────────────────────────────────
-          Punteggio finale. Se result.valid è false, il punteggio è 0.
-          "Nuova partita" ricrea tutto da zero (nuova chiamata a initGame).
-      */}
+      {/* ── RESULT (Fase 4) ─────────────────────────────────────────────── */}
       {phase === 'result' && (
         <div className="text-center py-5">
           <h2>Partita terminata</h2>
@@ -379,8 +446,10 @@ export default function GamePage() {
           <p className="text-muted">
             {stationName(startStationId)} → {stationName(endStationId)}
           </p>
-          {!result?.valid && (
-            <p className="text-danger">Percorso non valido — tutte le monete perse.</p>
+          {result && (
+            <p className={resultMessage(result.valid ? result.finalScore : 0, result.valid).cls}>
+              {resultMessage(result.valid ? result.finalScore : 0, result.valid).text}
+            </p>
           )}
           <button className="btn btn-success btn-lg mt-2" onClick={initGame}>
             Nuova partita

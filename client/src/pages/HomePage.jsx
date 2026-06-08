@@ -1,21 +1,22 @@
 import { Link } from 'react-router-dom';
+import metroHeroImg from '../assets/Gemini_Generated_Image_lkw8flkw8flkw8fl.png';
 
 export default function HomePage({ user }) {
   return (
     <div className="container py-5" id="home-page-container">
       {/* Hero Section */}
       <div className="p-5 mb-4 bg-dark bg-gradient text-white rounded-4 shadow-sm border border-secondary" id="hero-section">
-        <div className="container-fluid py-2">
-          <div className="d-flex align-items-center gap-3 mb-2">
-            <i className="bi bi-train-front text-warning" style={{ fontSize: '2.5rem' }}></i>
-            <h1 className="display-4 fw-bold mb-0" style={{ letterSpacing: '-1px' }}>Last Race</h1>
-          </div>
-          <p className="col-md-10 fs-5" style={{ color: '#cbd5e1' }}>
-            Un entusiasmante gioco di orientamento e memoria ispirato al celebre gioco da tavolo <em>"Race the Rails"</em>.
-            Memorizza le linee della metropolitana sotterranea, pianifica la rotta migliore prima che scada il tempo e gestisci gli imprevisti di viaggio!
-          </p>
-          {user && (
-            <div className="mt-4">
+        <div className="row align-items-center g-4">
+          <div className="col-lg-7">
+            <div className="d-flex align-items-center gap-3 mb-2">
+              <i className="bi bi-train-front text-warning" style={{ fontSize: '2.5rem' }}></i>
+              <h1 className="display-4 fw-bold mb-0" style={{ letterSpacing: '-1px' }}>Last Race</h1>
+            </div>
+            <p className="fs-5 mb-4" style={{ color: '#cbd5e1' }}>
+              Un entusiasmante gioco di orientamento e memoria ispirato al celebre gioco da tavolo <em>"Race the Rails"</em>.
+              Memorizza le linee della metropolitana sotterranea, pianifica la rotta migliore prima che scada il tempo e gestisci gli imprevisti di viaggio!
+            </p>
+            {user && (
               <div className="d-flex gap-3 align-items-center flex-wrap">
                 <Link className="btn btn-primary btn-lg px-4 fw-semibold d-flex align-items-center gap-2" to="/game" id="btn-play-game">
                   <i className="bi bi-controller fs-5"></i> Gioca Ora
@@ -27,8 +28,16 @@ export default function HomePage({ user }) {
                   Bentornato, <strong>{user.name}</strong>!
                 </span>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+          <div className="col-lg-5 text-center">
+            <img 
+              src={metroHeroImg} 
+              alt="Last Race Subway" 
+              className="img-fluid rounded-4 shadow-lg" 
+              style={{ maxHeight: '280px', width: '100%', objectFit: 'cover' }} 
+            />
+          </div>
         </div>
       </div>
 
@@ -136,13 +145,6 @@ export default function HomePage({ user }) {
                 </div>
               </li>
               <li className="list-group-item border-0 px-0 py-3 d-flex align-items-start gap-3 bg-white">
-                <span className="badge p-2 rounded-circle" style={{ color: '#854d0e', backgroundColor: '#fef9c3' }}><i className="bi bi-exclamation-octagon fs-5 d-block"></i></span>
-                <div>
-                  <strong className="d-block mb-1">Stazioni Trappola (Trap Stations)</strong>
-                  <span className="text-muted small">Fai attenzione alle stazioni speciali! Si incrociano più linee ma non sono abilitati gli interscambi. Modificare la linea in queste fermate invaliderà il percorso.</span>
-                </div>
-              </li>
-              <li className="list-group-item border-0 px-0 py-3 d-flex align-items-start gap-3 bg-white">
                 <span className="badge p-2 rounded-circle" style={{ color: '#075985', backgroundColor: '#e0f2fe' }}><i className="bi bi-coin fs-5 d-block"></i></span>
                 <div>
                   <strong className="d-block mb-1">Budget e Punteggio</strong>
@@ -164,19 +166,15 @@ export default function HomePage({ user }) {
               <h6 className="fw-bold mb-2">Composizione:</h6>
               <div className="d-flex justify-content-between mb-2 small border-bottom pb-1">
                 <span>Linee Totali</span>
-                <span className="fw-bold text-dark">4</span>
+                <span className="fw-bold text-dark">&ge; 4</span>
               </div>
               <div className="d-flex justify-content-between mb-2 small border-bottom pb-1">
                 <span>Stazioni Totali</span>
                 <span className="fw-bold text-dark">17-20</span>
               </div>
-              <div className="d-flex justify-content-between mb-2 small border-bottom pb-1">
+              <div className="d-flex justify-content-between small">
                 <span>Interscambi Abilitati</span>
                 <span className="fw-bold text-dark">&ge; 3</span>
-              </div>
-              <div className="d-flex justify-content-between small">
-                <span>Stazioni Trappola</span>
-                <span className="fw-bold text-danger">&ge; 3</span>
               </div>
             </div>
             <p className="text-muted small mb-0">

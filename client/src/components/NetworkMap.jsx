@@ -21,16 +21,17 @@ const CENTER_HANDLE = {
 };
 
 function StationNode({ data }) {
-  const { isInterchange, isStart, isEnd, showInterchanges, label } = data;
+  const { isInterchange, isStart, isEnd, isCurrent, showInterchanges, label } = data;
 
   let bg = '#ffffff';
   let border = '#94a3b8';
   let borderPx = 2;
-  let size = 8;
+  let size = 10;
 
-  if (isInterchange && showInterchanges) { size = 20; borderPx = 3; border = '#1e293b'; bg = '#fef9c3'; }
-  if (isStart) { size = 18; bg = '#4ade80'; border = '#16a34a'; borderPx = 3; }
-  if (isEnd)   { size = 18; bg = '#f87171'; border = '#dc2626'; borderPx = 3; }
+  if (isInterchange && showInterchanges) { size = 14; borderPx = 2.5; border = '#1e293b'; bg = '#ffffff'; }
+  if (isCurrent && !isStart && !isEnd)  { size = 14; bg = '#fde68a'; border = '#f59e0b'; borderPx = 3; }
+  if (isStart) { size = 16; bg = '#4ade80'; border = '#16a34a'; borderPx = 3; }
+  if (isEnd)   { size = 16; bg = '#f87171'; border = '#dc2626'; borderPx = 3; }
 
   return (
     <div style={{
@@ -79,11 +80,12 @@ export default function NetworkMap({
   selectedSegments = [],
   startStationId = null,
   endStationId = null,
+  currentNodeId = null,
   onSegmentClick = null,
   height = 480,
+  hoveredSegment = null,
 }) {
-  // is_interchange è un flag esplicito sulla stazione (non derivato da stationLines).
-  // Questo permette "trap" stations: su 2 linee ma senza diritto di cambio.
+  // L'interscambio è determinato dal flag esplicito (ora sempre true se ci sono >=2 linee)
   const interchangeSet = useMemo(
     () => new Set(stations.filter(s => s.is_interchange).map(s => s.id)),
     [stations]
@@ -100,7 +102,9 @@ export default function NetworkMap({
       for (let i = 0; i < sorted.length - 1; i++) {
         const a = Math.min(sorted[i].station_id, sorted[i + 1].station_id);
         const b = Math.max(sorted[i].station_id, sorted[i + 1].station_id);
-        map[`${a}-${b}`] = Number(lineId);
+        const key = `${a}-${b}`;
+        if (!map[key]) map[key] = [];
+        map[key].push(Number(lineId));
       }
     }
     return map;
@@ -115,13 +119,16 @@ export default function NetworkMap({
       isInterchange: interchangeSet.has(s.id),
       isStart: s.id === startStationId,
       isEnd: s.id === endStationId,
+      isCurrent: s.id === currentNodeId,
       showInterchanges,
     },
     draggable: false,
-  })), [stations, interchangeSet, startStationId, endStationId, showInterchanges]);
+  })), [stations, interchangeSet, startStationId, endStationId, currentNodeId, showInterchanges]);
 
   const edges = useMemo(() => {
     const seen = new Set();
+    const canClickSegments = Boolean(onSegmentClick);
+
     return segments.flatMap(seg => {
       const a = Math.min(seg.from_station_id, seg.to_station_id);
       const b = Math.max(seg.from_station_id, seg.to_station_id);
@@ -129,31 +136,56 @@ export default function NetworkMap({
       if (seen.has(key)) return [];
       seen.add(key);
 
-      const lid = segmentLineMap[key];
-      const color = showLines ? lineColor(lines, lid) : '#94a3b8';
+      const lids = segmentLineMap[key] ?? [];
+      if (lids.length === 0) return [];
+
       const isSelected = selectedSegments.some(
         s => (s.from === seg.from_station_id && s.to === seg.to_station_id) ||
              (s.from === seg.to_station_id   && s.to === seg.from_station_id)
       );
 
-      return [{
-        id: `e-${key}`,
-        source: String(seg.from_station_id),
-        target: String(seg.to_station_id),
-        type: 'straight',
-        className: isSelected ? 'map-edge-selected' : (!showLines ? 'map-edge-interactive' : 'map-edge-static'),
-        interactionWidth: onSegmentClick ? 28 : 0,
-        style: {
-          stroke: isSelected ? '#f59e0b' : color,
-          strokeWidth: isSelected ? 4 : 2.5,
-          opacity: isSelected ? 1 : (showLines ? 1 : 0),
-          cursor: onSegmentClick ? 'pointer' : 'default',
-        },
-        animated: isSelected,
-        data: { from: seg.from_station_id, to: seg.to_station_id },
-      }];
+      const isHovered = hoveredSegment && (
+        (hoveredSegment.from_station_id === seg.from_station_id && hoveredSegment.to_station_id === seg.to_station_id) ||
+        (hoveredSegment.from_station_id === seg.to_station_id && hoveredSegment.to_station_id === seg.from_station_id)
+      );
+
+      return lids.map((lid, index) => {
+        const color = showLines ? lineColor(lines, lid) : '#94a3b8';
+        
+        let strokeColor = color;
+        // Se ci sono più linee sul segmento, usiamo una linea più spessa per la prima e una più sottile per la seconda disegnata sopra
+        let strokeWidth = lids.length > 1 ? (index === 0 ? 5.5 : 2.2) : 3;
+        let opacity = showLines ? 1 : 0;
+        
+        if (isHovered) {
+          strokeColor = '#aa3bff'; // Bellissimo viola brand
+          strokeWidth = lids.length > 1 ? (index === 0 ? 8.5 : 3.5) : 5.5;
+          opacity = 1;
+        } else if (isSelected) {
+          strokeColor = '#f59e0b'; // Ambra per selezionati
+          strokeWidth = lids.length > 1 ? (index === 0 ? 7.5 : 3) : 5;
+          opacity = 1;
+        }
+
+        return {
+          id: `e-${key}-${lid}`,
+          source: String(seg.from_station_id),
+          target: String(seg.to_station_id),
+          type: 'straight',
+          className: isSelected ? 'map-edge-selected' : (isHovered ? 'map-edge-hovered' : (canClickSegments && !showLines ? 'map-edge-interactive' : 'map-edge-static')),
+          interactionWidth: canClickSegments && index === 0 ? 28 : 0, // Interazione solo sul primo edge per evitare click doppi
+          style: {
+            stroke: strokeColor,
+            strokeWidth: strokeWidth,
+            opacity: opacity,
+            cursor: canClickSegments && index === 0 ? 'pointer' : 'default',
+          },
+          animated: isSelected || isHovered,
+          data: { from: seg.from_station_id, to: seg.to_station_id },
+        };
+      });
     });
-  }, [segments, segmentLineMap, lines, showLines, selectedSegments, onSegmentClick]);
+  }, [segments, segmentLineMap, lines, showLines, selectedSegments, onSegmentClick, hoveredSegment]);
 
   const handleEdgeClick = useCallback((_, edge) => {
     onSegmentClick?.({ from: edge.data.from, to: edge.data.to });

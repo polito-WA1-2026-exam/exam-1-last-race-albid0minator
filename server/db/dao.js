@@ -37,18 +37,30 @@ export async function addGameStep(gameId, stepOrder, fromStationId, toStationId,
   );
 }
 
-export async function getGamesByUser(userId) {
-  return dbAll(
-    'SELECT id, start_station_id, end_station_id, score, valid, played_at FROM games WHERE user_id = ? ORDER BY played_at DESC',
-    [userId]
-  );
+export async function getGamesByUserPaged(userId, limit, offset) {
+  return dbAll(`
+    SELECT g.id, g.score, g.valid, g.played_at,
+           s1.name as start_station_name,
+           s2.name as end_station_name
+    FROM games g
+    JOIN stations s1 ON g.start_station_id = s1.id
+    JOIN stations s2 ON g.end_station_id = s2.id
+    WHERE g.user_id = ?
+    ORDER BY g.played_at DESC
+    LIMIT ? OFFSET ?
+  `, [userId, limit, offset]);
+}
+
+export async function countGamesByUser(userId) {
+  const result = await dbGet('SELECT COUNT(*) as total FROM games WHERE user_id = ?', [userId]);
+  return result ? result.total : 0;
 }
 
 // --- Classifica ---
 
 export async function getRanking() {
   return dbAll(`
-    SELECT u.id as user_id, u.name, MAX(g.score) as best_score
+    SELECT u.id as user_id, u.name, MAX(g.score) as best_score, COUNT(*) as games_played
     FROM games g
     JOIN users u ON u.id = g.user_id
     WHERE g.valid = 1
