@@ -5,20 +5,20 @@ export default function HomePage({ user }) {
   return (
     <div className="container py-5" id="home-page-container">
       {/* Hero Section */}
-      <div className="p-5 mb-4 bg-dark bg-gradient text-white rounded-4 shadow-sm border border-secondary" id="hero-section">
+      <div className="p-5 mb-4 hero-panel text-white" id="hero-section">
         <div className="row align-items-center g-4">
           <div className="col-lg-7">
             <div className="d-flex align-items-center gap-3 mb-2">
               <i className="bi bi-train-front text-warning" style={{ fontSize: '2.5rem' }}></i>
               <h1 className="display-4 fw-bold mb-0" style={{ letterSpacing: '-1px' }}>Last Race</h1>
             </div>
-            <p className="fs-5 mb-4" style={{ color: '#cbd5e1' }}>
+            <p className="fs-5 mb-4 hero-subtitle">
               Un entusiasmante gioco di orientamento e memoria ispirato al celebre gioco da tavolo <em>"Race the Rails"</em>.
               Memorizza le linee della metropolitana sotterranea, pianifica la rotta migliore prima che scada il tempo e gestisci gli imprevisti di viaggio!
             </p>
             {user && (
               <div className="d-flex gap-3 align-items-center flex-wrap">
-                <Link className="btn btn-primary btn-lg px-4 fw-semibold d-flex align-items-center gap-2" to="/game" id="btn-play-game">
+                <Link className="btn btn-brand btn-lg px-4 fw-semibold d-flex align-items-center gap-2" to="/game" id="btn-play-game">
                   <i className="bi bi-controller fs-5"></i> Gioca Ora
                 </Link>
                 <Link className="btn btn-outline-light btn-lg px-4 d-flex align-items-center gap-2" to="/ranking" id="btn-view-ranking">
@@ -43,7 +43,7 @@ export default function HomePage({ user }) {
 
       {/* Informative section for Anonymous Users */}
       {!user && (
-        <div className="card border-0 shadow-sm rounded-4 mb-5 p-4 bg-white text-center" id="anonymous-info-card">
+        <div className="surface-card mb-5 p-4 text-center" id="anonymous-info-card">
           <div className="card-body py-4">
             <div className="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-3" style={{ width: 60, height: 60 }}>
               <i className="bi bi-info-circle-fill fs-3"></i>
@@ -65,7 +65,7 @@ export default function HomePage({ user }) {
       <div className="row row-cols-1 row-cols-md-4 g-4 mb-5" id="game-steps-row">
         {/* Step 1 */}
         <div className="col">
-          <div className="card h-100 border-0 shadow-sm rounded-4 bg-white" id="step-card-1">
+          <div className="surface-card h-100" id="step-card-1">
             <div className="card-body p-4">
               <div className="d-inline-flex align-items-center justify-content-center bg-primary bg-gradient text-white rounded-3 mb-3" style={{ width: 50, height: 50 }}>
                 <i className="bi bi-eye-fill fs-5"></i>
@@ -80,7 +80,7 @@ export default function HomePage({ user }) {
 
         {/* Step 2 */}
         <div className="col">
-          <div className="card h-100 border-0 shadow-sm rounded-4 bg-white" id="step-card-2">
+          <div className="surface-card h-100" id="step-card-2">
             <div className="card-body p-4">
               <div className="d-inline-flex align-items-center justify-content-center bg-warning bg-gradient text-dark rounded-3 mb-3" style={{ width: 50, height: 50 }}>
                 <i className="bi bi-alarm-fill fs-5"></i>
@@ -95,7 +95,7 @@ export default function HomePage({ user }) {
 
         {/* Step 3 */}
         <div className="col">
-          <div className="card h-100 border-0 shadow-sm rounded-4 bg-white" id="step-card-3">
+          <div className="surface-card h-100" id="step-card-3">
             <div className="card-body p-4">
               <div className="d-inline-flex align-items-center justify-content-center bg-info bg-gradient text-white rounded-3 mb-3" style={{ width: 50, height: 50 }}>
                 <i className="bi bi-lightning-fill fs-5"></i>
@@ -110,7 +110,7 @@ export default function HomePage({ user }) {
 
         {/* Step 4 */}
         <div className="col">
-          <div className="card h-100 border-0 shadow-sm rounded-4 bg-white" id="step-card-4">
+          <div className="surface-card h-100" id="step-card-4">
             <div className="card-body p-4">
               <div className="d-inline-flex align-items-center justify-content-center bg-success bg-gradient text-white rounded-3 mb-3" style={{ width: 50, height: 50 }}>
                 <i className="bi bi-flag-fill fs-5"></i>
@@ -127,7 +127,7 @@ export default function HomePage({ user }) {
       <div className="row g-4 mb-5" id="rules-details-row">
         {/* Regole di Connessione e Interscambi */}
         <div className="col-md-7">
-          <div className="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white" id="rules-details-card">
+          <div className="surface-card p-4 h-100" id="rules-details-card">
             <h4 className="fw-bold mb-3">Dettagli e Regole di Viaggio</h4>
             <ul className="list-group list-group-flush">
               <li className="list-group-item border-0 px-0 py-3 d-flex align-items-start gap-3 bg-white">
@@ -157,7 +157,7 @@ export default function HomePage({ user }) {
 
         {/* Informazioni Rete */}
         <div className="col-md-5">
-          <div className="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white" id="network-info-card">
+          <div className="surface-card p-4 h-100" id="network-info-card">
             <h4 className="fw-bold mb-3">La Nostra Rete Metro</h4>
             <p className="text-muted small">
               La metropolitana cittadina è strutturata su una griglia fissa ordinata e parallela di <strong>4x5 stazioni</strong>.

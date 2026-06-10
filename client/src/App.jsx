@@ -49,7 +49,12 @@ export default function App() {
   }
 
   if (loading) {
-    return <div className="p-4">Caricamento sessione...</div>
+    return (
+      <div className="d-flex align-items-center justify-content-center py-5 text-muted">
+        <div className="spinner-border spinner-border-sm text-primary me-2" role="status" />
+        Caricamento sessione…
+      </div>
+    )
   }
 
   return (

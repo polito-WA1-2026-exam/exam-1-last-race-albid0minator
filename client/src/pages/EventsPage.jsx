@@ -44,7 +44,7 @@ export default function EventsPage() {
   return (
     <div className="container py-5" id="events-page-container">
       <div className="d-flex align-items-center gap-3 mb-4">
-        <div className="bg-primary bg-gradient text-white rounded-3 p-3 d-flex align-items-center justify-content-center" style={{ width: 56, height: 56 }}>
+        <div className="page-header-icon">
           <i className="bi bi-coin fs-3"></i>
         </div>
         <div>
@@ -56,7 +56,7 @@ export default function EventsPage() {
       <div className="row g-4 mb-4">
         {/* Info card */}
         <div className="col-lg-4">
-          <div className="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+          <div className="surface-card p-4 h-100">
             <h4 className="fw-bold mb-3">Gli Imprevisti di Viaggio</h4>
             <p className="text-muted small">
               Durante la fase di <strong>Execution</strong>, per ciascun segmento che compone il tuo percorso valido, il server estrae in modo del tutto casuale uno degli eventi sottostanti.
@@ -73,10 +73,10 @@ export default function EventsPage() {
 
         {/* List of events */}
         <div className="col-lg-8">
-          <div className="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+          <div className="surface-card overflow-hidden">
             <div className="table-responsive">
-              <table className="table table-hover align-middle mb-0">
-                <thead className="table-light">
+              <table className="table table-hover align-middle mb-0 table-app">
+                <thead>
                   <tr>
                     <th scope="col" className="ps-4 py-3" style={{ width: '25%' }}>Impatto</th>
                     <th scope="col" className="py-3" style={{ width: '55%' }}>Descrizione dell'Evento</th>

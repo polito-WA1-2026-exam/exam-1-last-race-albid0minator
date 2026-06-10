@@ -59,7 +59,7 @@ export default function SegmentList({
   }, [filteredSegments, segmentUsageCounts, stationName]);
 
   return (
-    <div className="card shadow-sm border-0 bg-white d-flex flex-column" style={{ padding: '12px', minHeight: 0, flex: '1 1 auto' }}>
+    <div className="surface-card surface-card--flat d-flex flex-column" style={{ padding: '12px', minHeight: 0, flex: '1 1 auto' }}>
       <div className="d-flex align-items-center justify-content-between gap-2 border-bottom pb-2 mb-2">
         <h5 className="mb-0 text-secondary fw-bold">Segmenti disponibili</h5>
         <span className="badge bg-light text-dark border">

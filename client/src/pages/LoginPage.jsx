@@ -28,7 +28,7 @@ export default function LoginPage({ onLogin, user }) {
 
   return (
     <div className="d-flex align-items-center justify-content-center p-3" style={{ minHeight: 'calc(100vh - 75px)' }} id="login-page-container">
-      <div className="card border-0 shadow rounded-4 p-4 p-md-5 bg-white w-100" style={{ maxWidth: 480 }}>
+      <div className="surface-card p-4 p-md-5 w-100" style={{ maxWidth: 480 }}>
         <div className="text-center mb-4">
           <i className="bi bi-train-front text-warning" style={{ fontSize: '3rem' }}></i>
           <h3 className="fw-bold mt-2 mb-1" style={{ letterSpacing: '-0.5px' }}>Accedi a Last Race</h3>

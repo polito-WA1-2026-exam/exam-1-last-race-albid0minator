@@ -40,6 +40,8 @@ export default function GamePage() {
   });
 
   // ── INIZIALIZZAZIONE ──────────────────────────────────────────────────
+  // La partita viene creata in Setup così partenza/arrivo sono visibili sulla mappa.
+  // beginPlanning() riusa lo stesso gameId senza crearne uno nuovo.
   async function loadGameData() {
     try {
       const [net, game] = await Promise.all([getNetwork(), createGame()]);
@@ -54,9 +56,19 @@ export default function GamePage() {
     }
   }
 
+  function beginPlanning() {
+    setSelectedSegments([]);
+    setHoveredSegment(null);
+    setTimeLeft(PLANNING_SECONDS);
+    setPhase('planning');
+  }
+
   function initGame() {
     setPhase('loading');
     setError(null);
+    setGameId(null);
+    setStartStationId(null);
+    setEndStationId(null);
     setSelectedSegments([]);
     setHoveredSegment(null);
     setResult(null);
@@ -240,13 +252,17 @@ export default function GamePage() {
           </div>
 
           <div className="mt-2 d-flex gap-3 align-items-center flex-wrap flex-shrink-0">
-            <div className="d-flex gap-2 flex-wrap">
-              <span className="badge bg-success">Partenza</span>
-              <span className="badge bg-danger">Arrivo</span>
+            <div className="d-flex gap-2 flex-wrap align-items-center">
+              <span className="badge bg-success py-2 px-3">
+                Partenza: <strong>{stationName(startStationId)}</strong>
+              </span>
+              <span className="badge bg-danger py-2 px-3">
+                Arrivo: <strong>{stationName(endStationId)}</strong>
+              </span>
             </div>
             <button
-              className="btn btn-primary ms-auto"
-              onClick={() => { setTimeLeft(PLANNING_SECONDS); setPhase('planning'); }}
+              className="btn btn-brand ms-auto"
+              onClick={beginPlanning}
             >
               Sono pronto — inizia il timer →
             </button>
@@ -262,7 +278,7 @@ export default function GamePage() {
       {phase === 'planning' && (
         <div className="d-flex flex-column flex-grow-1" style={{ minHeight: 0, overflow: 'hidden' }}>
           {/* Top header instructions with audio control & timer */}
-          <div className="mb-2 d-flex justify-content-between align-items-center flex-wrap gap-3 py-2 px-3 bg-white rounded shadow-sm border">
+          <div className="mb-2 d-flex justify-content-between align-items-center flex-wrap gap-3 py-2 px-3 game-phase-header">
             <div>
               <h4 className="mb-1 text-primary fw-bold">Fase 2 — Planning</h4>
               <p className="text-muted mb-0 small">
@@ -287,7 +303,7 @@ export default function GamePage() {
           >
             <div className="d-flex" style={{ minHeight: 0 }}>
               <div className="d-flex flex-column flex-grow-1" style={{ minHeight: 0 }}>
-                <div className="card shadow-sm border-0 mb-2 overflow-hidden flex-grow-1 d-flex flex-column" style={{ minHeight: 0 }}>
+                <div className="game-map-card mb-2 flex-grow-1 d-flex flex-column" style={{ minHeight: 0 }}>
                   <div className="card-body p-0 flex-grow-1 d-flex flex-column" style={{ minHeight: 0 }}>
                     <NetworkMap
                       stations={network.stations}
@@ -332,7 +348,7 @@ export default function GamePage() {
             <div className="d-flex" style={{ minHeight: 0 }}>
               <div className="d-flex flex-column gap-2 flex-grow-1" style={{ minHeight: 0, overflow: 'hidden' }}>
                 {/* Indicazione Partenza e Destinazione */}
-                <div className="card shadow-sm border-0" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                <div className="route-endpoints-card">
                   <div className="card-body py-2 px-3">
                     <div className="d-flex align-items-center justify-content-center gap-3">
                       <div className="d-flex align-items-center gap-2">
@@ -441,19 +457,21 @@ export default function GamePage() {
       {/* ── RESULT (Fase 4) ─────────────────────────────────────────────── */}
       {phase === 'result' && (
         <div className="text-center py-5">
-          <h2>Partita terminata</h2>
-          <p className="fs-1 fw-bold">{result?.valid ? result.finalScore : 0} 🪙</p>
-          <p className="text-muted">
-            {stationName(startStationId)} → {stationName(endStationId)}
-          </p>
-          {result && (
-            <p className={resultMessage(result.valid ? result.finalScore : 0, result.valid).cls}>
-              {resultMessage(result.valid ? result.finalScore : 0, result.valid).text}
+          <div className="result-panel">
+            <h2 className="fw-bold mb-3">Partita terminata</h2>
+            <p className="result-score mb-2">{result?.valid ? result.finalScore : 0} 🪙</p>
+            <p className="text-muted mb-3">
+              {stationName(startStationId)} → {stationName(endStationId)}
             </p>
-          )}
-          <button className="btn btn-success btn-lg mt-2" onClick={initGame}>
-            Nuova partita
-          </button>
+            {result && (
+              <p className={resultMessage(result.valid ? result.finalScore : 0, result.valid).cls}>
+                {resultMessage(result.valid ? result.finalScore : 0, result.valid).text}
+              </p>
+            )}
+            <button className="btn btn-brand btn-lg mt-3 px-4" onClick={initGame}>
+              Nuova partita
+            </button>
+          </div>
         </div>
       )}
 

@@ -81,6 +81,14 @@ function validatePath(segments, startId, endId, segmentLines, interchanges) {
     if (segments[i].from !== segments[i - 1].to) return false;
   }
 
+  // Ogni segmento può essere usato al massimo una volta
+  const usedSegments = new Set();
+  for (const seg of segments) {
+    const key = `${Math.min(seg.from, seg.to)}-${Math.max(seg.from, seg.to)}`;
+    if (usedSegments.has(key)) return false;
+    usedSegments.add(key);
+  }
+
   let currentLines = null;
   for (const seg of segments) {
     const key = `${Math.min(seg.from, seg.to)}-${Math.max(seg.from, seg.to)}`;

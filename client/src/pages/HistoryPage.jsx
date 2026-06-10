@@ -88,7 +88,7 @@ export default function HistoryPage() {
   return (
     <div className="container py-4" style={{ maxWidth: 900 }} id="history-page-container">
       <div className="d-flex align-items-center gap-3 mb-4">
-        <div className="bg-primary bg-gradient text-white rounded-3 p-2.5 shadow-sm d-flex align-items-center justify-content-center" style={{ width: 45, height: 45 }}>
+        <div className="page-header-icon" style={{ width: 45, height: 45 }}>
           <i className="bi bi-clock-history fs-5"></i>
         </div>
         <div>
@@ -98,7 +98,7 @@ export default function HistoryPage() {
       </div>
 
       {games && games.length === 0 ? (
-        <div className="card border-0 shadow-sm rounded-4 p-5 text-center bg-white" id="no-history-card">
+        <div className="surface-card p-5 text-center" id="no-history-card">
           <div className="d-inline-flex align-items-center justify-content-center bg-light rounded-circle mb-3" style={{ width: 60, height: 60 }}>
             <i className="bi bi-controller text-muted fs-3"></i>
           </div>
@@ -108,10 +108,10 @@ export default function HistoryPage() {
           </p>
         </div>
       ) : (
-        <div className="card border-0 shadow-sm rounded-4 overflow-hidden bg-white" id="history-table-card" style={{ opacity: loading ? 0.6 : 1, transition: 'opacity 0.15s ease' }}>
+        <div className="surface-card overflow-hidden" id="history-table-card" style={{ opacity: loading ? 0.6 : 1, transition: 'opacity 0.15s ease' }}>
           <div className="table-responsive">
-            <table className="table table-hover align-middle mb-0">
-              <thead className="table-light text-uppercase text-muted" style={{ fontSize: '11px', letterSpacing: '0.5px' }}>
+            <table className="table table-hover align-middle mb-0 table-app">
+              <thead>
                 <tr>
                   <th className="px-4 py-3" style={{ width: 65 }}>Corsa</th>
                   <th className="py-3">Data e Ora</th>
