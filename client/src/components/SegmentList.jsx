@@ -59,38 +59,38 @@ export default function SegmentList({
   }, [filteredSegments, segmentUsageCounts, stationName]);
 
   return (
-    <div className="surface-card surface-card--flat d-flex flex-column" style={{ padding: '12px', minHeight: 0, flex: '1 1 auto' }}>
+    <div className="surface-card surface-card--flat segment-panel d-flex flex-column">
       <div className="d-flex align-items-center justify-content-between gap-2 border-bottom pb-2 mb-2">
-        <h5 className="mb-0 text-secondary fw-bold">Segmenti disponibili</h5>
+        <h5 className="mb-0 fw-bold">Segmenti disponibili</h5>
         <span className="badge bg-light text-dark border">
           {filterQuery.trim() ? `${finalSegments.length}/${sortedSegments.length}` : sortedSegments.length}
         </span>
       </div>
 
-      {/* Barra di ricerca segmenti */}
       <div className="position-relative mb-2">
+        <label className="visually-hidden" htmlFor="segment-search">Cerca una stazione</label>
+        <i className="bi bi-search segment-search-icon" aria-hidden="true" />
         <input
+          id="segment-search"
           type="text"
-          className="form-control form-control-sm pe-4"
+          className="form-control form-control-sm segment-search-input"
           placeholder="Cerca stazione (es. Châtelet)..."
           value={filterQuery}
           onChange={e => setFilterQuery(e.target.value)}
-          style={{ borderRadius: '6px' }}
         />
         {filterQuery && (
-          <span 
-            role="button"
-            className="position-absolute end-0 top-50 translate-middle-y me-2 text-muted fw-bold"
-            style={{ cursor: 'pointer', fontSize: '16px', zIndex: 10, lineHeight: 1 }}
+          <button
+            type="button"
+            className="btn btn-sm segment-search-clear"
             onClick={() => setFilterQuery('')}
-            title="Pulisci ricerca"
+            aria-label="Pulisci ricerca"
           >
-            &times;
-          </span>
+            <i className="bi bi-x-lg" aria-hidden="true" />
+          </button>
         )}
       </div>
 
-      <div className="list-group overflow-auto flex-grow-1" style={{ minHeight: 0 }}>
+      <div className="list-group segment-list overflow-auto flex-grow-1">
         {finalSegments.length === 0 ? (
           <div className="text-center py-3 text-muted small italic">
             Nessun segmento trovato per "{filterQuery}"
@@ -105,16 +105,20 @@ export default function SegmentList({
               <button
                 key={segmentKey(seg.from_station_id, seg.to_station_id)}
                 type="button"
-                className={`list-group-item list-group-item-action d-flex align-items-center justify-content-between gap-2 py-2 ${isSelected ? 'bg-warning-subtle text-warning-emphasis border-warning-subtle' : ''}`}
+                className={`list-group-item list-group-item-action d-flex align-items-center justify-content-between gap-2 py-2 ${isSelected ? 'is-selected' : ''}`}
                 onClick={() => onSegmentSelect(seg)}
                 onMouseEnter={() => onSegmentHover?.(seg)}
                 onMouseLeave={() => onSegmentHover?.(null)}
+                aria-pressed={isSelected}
               >
                 <span className="text-start small fw-semibold">
                   {fromName} - {toName}
                 </span>
                 {isSelected && (
-                  <span className="badge bg-warning text-dark flex-shrink-0">✓ Selezionato</span>
+                  <span className="badge bg-warning text-dark flex-shrink-0">
+                    <i className="bi bi-check-lg me-1" aria-hidden="true" />
+                    Selezionato
+                  </span>
                 )}
               </button>
             );

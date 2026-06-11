@@ -94,6 +94,14 @@ app.use('/api', authRouter);
 app.use('/api', networkRouter);
 app.use('/api', gameRouter);
 
+app.use((err, req, res, next) => {
+  console.error(err);
+  if (res.headersSent) {
+    return next(err);
+  }
+  return res.status(500).json({ error: 'Errore interno del server.' });
+});
+
 app.listen(PORT, () => {
   console.log(`Server avviato su http://localhost:${PORT}`);
 });

@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
 import { getRanking } from '../API.js';
 
-const MEDALS = ['🥇', '🥈', '🥉'];
-
 function rankDisplay(index) {
   if (index < 3) {
     return (
       <span className={`rank-medal rank-medal--${index + 1}`} aria-hidden="true">
-        {MEDALS[index]}
+        <i className="bi bi-trophy-fill" />
       </span>
     );
   }
@@ -76,7 +74,7 @@ export default function RankingPage() {
                     <td className="py-3 fw-semibold">{entry.name}</td>
                     <td className="py-3 text-end text-muted">{entry.games_played}</td>
                     <td className="pe-4 py-3 text-end fw-bold text-primary fs-6">
-                      {entry.best_score} 🪙
+                      {entry.best_score} <i className="bi bi-coin ms-1" aria-label="monete" />
                     </td>
                   </tr>
                 ))}

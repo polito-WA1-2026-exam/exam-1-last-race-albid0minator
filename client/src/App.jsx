@@ -19,24 +19,38 @@ function ProtectedRoute({ user, children }) {
 export default function App() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [bootstrapError, setBootstrapError] = useState(null)
+
+  const bootstrapSession = async () => {
+    setLoading(true)
+    setBootstrapError(null)
+    try {
+      const session = await getCurrentSession()
+      setUser(session?.user ?? null)
+    } catch (err) {
+      setUser(null)
+      setBootstrapError(err.message ?? 'Impossibile contattare il server.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
 
-    const bootstrapSession = async () => {
+    ;(async () => {
       try {
         const session = await getCurrentSession()
+        if (!cancelled) setUser(session?.user ?? null)
+      } catch (err) {
         if (!cancelled) {
-          setUser(session?.user ?? null)
+          setUser(null)
+          setBootstrapError(err.message ?? 'Impossibile contattare il server.')
         }
       } finally {
-        if (!cancelled) {
-          setLoading(false)
-        }
+        if (!cancelled) setLoading(false)
       }
-    }
-
-    bootstrapSession()
+    })()
 
     return () => {
       cancelled = true
@@ -44,8 +58,13 @@ export default function App() {
   }, [])
 
   const handleLogout = async () => {
-    await logout()
-    setUser(null)
+    try {
+      await logout()
+    } catch {
+      /* Server non raggiungibile: esci comunque lato client */
+    } finally {
+      setUser(null)
+    }
   }
 
   if (loading) {
@@ -53,6 +72,17 @@ export default function App() {
       <div className="d-flex align-items-center justify-content-center py-5 text-muted">
         <div className="spinner-border spinner-border-sm text-primary me-2" role="status" />
         Caricamento sessione…
+      </div>
+    )
+  }
+
+  if (bootstrapError) {
+    return (
+      <div className="container py-5 text-center" style={{ maxWidth: 480 }}>
+        <div className="alert alert-danger mb-3">{bootstrapError}</div>
+        <button type="button" className="btn btn-primary" onClick={() => void bootstrapSession()}>
+          Riprova
+        </button>
       </div>
     )
   }

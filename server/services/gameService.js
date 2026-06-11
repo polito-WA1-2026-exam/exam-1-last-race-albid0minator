@@ -1,5 +1,10 @@
 import { getStations, getStationLines, getEvents, createGame, addGameStep } from '../db/dao.js';
 import { dbGet, dbRun } from '../db/db.js';
+import {
+  buildGraphLookups,
+  orientSegmentsForPath,
+  validatePath,
+} from '../lib/pathValidation.js';
 
 // BFS per calcolare le distanze minime da una stazione di partenza a tutte le altre stazioni raggiungibili.
 // Restituisce una Map con stationId → distanza (in fermate).
@@ -20,18 +25,17 @@ function bfsAllDistances(adjacency, start) {
   return distances;
 }
 
-// Costruisce il grafo di adiacenza e le strutture di lookup.
-function buildGraph(stations, stationLines) {
-  const adjacency = new Map();    // stationId → Set<neighborId>
-  const segmentLines = new Map(); // "minId-maxId" → Set<lineId>
-
+// Costruisce il grafo di adiacenza (per BFS start/end).
+function buildAdjacency(stationLines) {
+  const adjacency = new Map();
   const byLine = new Map();
+
   for (const sl of stationLines) {
     if (!byLine.has(sl.line_id)) byLine.set(sl.line_id, []);
     byLine.get(sl.line_id).push(sl);
   }
 
-  for (const [lineId, entries] of byLine) {
+  for (const [, entries] of byLine) {
     const sorted = entries.slice().sort((a, b) => a.position - b.position);
     for (let i = 0; i < sorted.length - 1; i++) {
       const a = sorted[i].station_id;
@@ -41,18 +45,10 @@ function buildGraph(stations, stationLines) {
       if (!adjacency.has(b)) adjacency.set(b, new Set());
       adjacency.get(a).add(b);
       adjacency.get(b).add(a);
-
-      const key = `${Math.min(a, b)}-${Math.max(a, b)}`;
-      if (!segmentLines.has(key)) segmentLines.set(key, new Set());
-      segmentLines.get(key).add(lineId);
     }
   }
 
-  const interchanges = new Set(
-    stations.filter(s => s.is_interchange).map(s => s.id)
-  );
-
-  return { adjacency, segmentLines, interchanges };
+  return adjacency;
 }
 
 // Assegna start e end casuali con distanza minima >= 3.
@@ -70,54 +66,13 @@ function pickStartEnd(stationIds, adjacency) {
   return candidates[Math.floor(Math.random() * candidates.length)];
 }
 
-// Valida il percorso inviato dal client.
-function validatePath(segments, startId, endId, segmentLines, interchanges) {
-  if (!segments || segments.length === 0) return false;
-  if (segments[0].from !== startId) return false;
-  if (segments[segments.length - 1].to !== endId) return false;
-
-  // Verifica continuità
-  for (let i = 1; i < segments.length; i++) {
-    if (segments[i].from !== segments[i - 1].to) return false;
-  }
-
-  // Ogni segmento può essere usato al massimo una volta
-  const usedSegments = new Set();
-  for (const seg of segments) {
-    const key = `${Math.min(seg.from, seg.to)}-${Math.max(seg.from, seg.to)}`;
-    if (usedSegments.has(key)) return false;
-    usedSegments.add(key);
-  }
-
-  let currentLines = null;
-  for (const seg of segments) {
-    const key = `${Math.min(seg.from, seg.to)}-${Math.max(seg.from, seg.to)}`;
-    const lines = segmentLines.get(key);
-    if (!lines || lines.size === 0) return false; // segmento non esiste
-
-    if (currentLines === null) {
-      currentLines = new Set(lines);
-    } else {
-      const continuedLines = new Set([...currentLines].filter(x => lines.has(x)));
-
-      if (interchanges.has(seg.from)) {
-        currentLines = new Set(lines);
-      } else {
-        if (continuedLines.size === 0) return false;
-        currentLines = continuedLines;
-      }
-    }
-  }
-  return true;
-}
-
 /**
  * Avvia una nuova partita per l'utente specificato.
  * Assegna una coppia di stazioni start/end valida e salva la partita nel DB come pendente.
  */
 export async function startNewGame(userId) {
   const [stations, stationLines] = await Promise.all([getStations(), getStationLines()]);
-  const { adjacency } = buildGraph(stations, stationLines);
+  const adjacency = buildAdjacency(stationLines);
   const stationIds = new Set(stationLines.map(sl => sl.station_id));
   const pair = pickStartEnd(stationIds, adjacency);
   if (!pair) {
@@ -150,9 +105,17 @@ export async function submitGameRoute(userId, gameId, segments) {
   }
 
   const [stations, stationLines] = await Promise.all([getStations(), getStationLines()]);
-  const { segmentLines, interchanges } = buildGraph(stations, stationLines);
+  const { segmentLines, interchanges } = buildGraphLookups(stations, stationLines);
 
-  const isValid = validatePath(segments, game.start_station_id, game.end_station_id, segmentLines, interchanges);
+  const orientedSegments = orientSegmentsForPath(segments, game.start_station_id);
+  const isValid = orientedSegments !== null
+    && validatePath(
+      orientedSegments,
+      game.start_station_id,
+      game.end_station_id,
+      segmentLines,
+      interchanges
+    );
 
   if (!isValid) {
     await dbRun('UPDATE games SET valid = 0, score = 0 WHERE id = ?', [gameId]);
@@ -164,15 +127,15 @@ export async function submitGameRoute(userId, gameId, segments) {
   let coins = 20;
   const steps = [];
 
-  for (let i = 0; i < segments.length; i++) {
+  for (let i = 0; i < orientedSegments.length; i++) {
     const event = events[Math.floor(Math.random() * events.length)];
     coins += event.effect;
     const coinsAfter = Math.max(0, coins);
-    await addGameStep(gameId, i + 1, segments[i].from, segments[i].to, event.id, coinsAfter);
+    await addGameStep(gameId, i + 1, orientedSegments[i].from, orientedSegments[i].to, event.id, coinsAfter);
     steps.push({
       stepOrder: i + 1,
-      fromStationId: segments[i].from,
-      toStationId: segments[i].to,
+      fromStationId: orientedSegments[i].from,
+      toStationId: orientedSegments[i].to,
       event: { id: event.id, description: event.description, effect: event.effect },
       coinsAfter,
     });

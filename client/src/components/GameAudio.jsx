@@ -1,11 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 
-export default function GameAudio({ phase }) {
+const DEFAULT_VOLUME = 0.25;
+
+const GameAudioContext = createContext(null);
+
+function useGameAudioEngine(phase) {
   const [isMuted, setIsMuted] = useState(() => {
     try {
       return localStorage.getItem('game_music_muted') === 'true';
-    } catch (error) {
-      void error;
+    } catch {
       return false;
     }
   });
@@ -13,38 +16,40 @@ export default function GameAudio({ phase }) {
   const [volume, setVolume] = useState(() => {
     try {
       const savedVolume = localStorage.getItem('game_music_volume');
-      return savedVolume !== null ? parseFloat(savedVolume) : 0.4;
-    } catch (error) {
-      void error;
-      return 0.4;
+      return savedVolume !== null ? parseFloat(savedVolume) : DEFAULT_VOLUME;
+    } catch {
+      return DEFAULT_VOLUME;
     }
   });
 
-  const audioRef = useRef(null);
+  const bgMusicRef = useRef(null);
+
+  useEffect(() => {
+    if (!bgMusicRef.current) {
+      bgMusicRef.current = new Audio('/audio.ogg');
+      bgMusicRef.current.loop = true;
+      bgMusicRef.current.preload = 'auto';
+    }
+  }, []);
 
   useEffect(() => {
     if (phase !== 'planning') {
-      if (audioRef.current) {
-        audioRef.current.pause();
+      if (bgMusicRef.current) {
+        bgMusicRef.current.pause();
       }
       return;
     }
 
-    if (!audioRef.current) {
-      audioRef.current = new Audio('/audio.ogg');
-      audioRef.current.loop = true;
-    }
-
-    audioRef.current.volume = volume;
-    audioRef.current.muted = isMuted;
+    bgMusicRef.current.volume = volume;
+    bgMusicRef.current.muted = isMuted;
 
     if (!isMuted) {
-      audioRef.current.play().catch(() => {});
+      bgMusicRef.current.play().catch(() => {});
     }
 
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
+      if (bgMusicRef.current) {
+        bgMusicRef.current.pause();
       }
     };
   }, [phase, isMuted, volume]);
@@ -54,8 +59,8 @@ export default function GameAudio({ phase }) {
       const nextMuted = !prev;
       try {
         localStorage.setItem('game_music_muted', String(nextMuted));
-      } catch (error) {
-        void error;
+      } catch {
+        /* ignore */
       }
       return nextMuted;
     });
@@ -66,34 +71,59 @@ export default function GameAudio({ phase }) {
     setVolume(nextVolume);
     try {
       localStorage.setItem('game_music_volume', String(nextVolume));
-    } catch (error) {
-      void error;
+    } catch {
+      /* ignore */
     }
     if (nextVolume > 0 && isMuted) {
       setIsMuted(false);
       try {
         localStorage.setItem('game_music_muted', 'false');
-      } catch (error) {
-        void error;
+      } catch {
+        /* ignore */
       }
     }
   };
 
-  if (phase !== 'planning') return null;
+  return { isMuted, volume, toggleMute, handleVolumeChange };
+}
+
+export function GameAudioProvider({ phase, children }) {
+  const audio = useGameAudioEngine(phase);
+  return (
+    <GameAudioContext.Provider value={audio}>
+      {children}
+    </GameAudioContext.Provider>
+  );
+}
+
+export function GameAudioControls() {
+  const audio = useContext(GameAudioContext);
+  if (!audio) return null;
+
+  const { isMuted, volume, toggleMute, handleVolumeChange } = audio;
 
   return (
-    <div className="d-flex align-items-center gap-2 bg-light border rounded-pill px-3 py-1 shadow-sm">
-      {/* Mute/Speaker Button */}
+    <div className="audio-controls d-flex align-items-center gap-2 bg-light border rounded-pill px-3">
       <button
-        className="btn btn-link p-0 text-decoration-none"
+        className="btn btn-link audio-toggle p-0 text-decoration-none"
         onClick={toggleMute}
         style={{ fontSize: '1.1rem', color: isMuted || volume === 0 ? '#dc2626' : '#16a34a', lineHeight: 1 }}
-        title={isMuted ? "Attiva audio" : "Muta audio"}
+        title={isMuted ? 'Attiva audio' : 'Muta audio'}
+        aria-label={isMuted ? 'Attiva audio' : 'Muta audio'}
+        type="button"
       >
-        {isMuted || volume === 0 ? '🔇' : volume < 0.4 ? '🔈' : volume < 0.7 ? '🔉' : '🔊'}
+        <i
+          className={`bi ${
+            isMuted || volume === 0
+              ? 'bi-volume-mute-fill'
+              : volume < 0.5
+                ? 'bi-volume-down-fill'
+                : 'bi-volume-up-fill'
+          }`}
+          aria-hidden="true"
+        />
       </button>
 
-      {/* Volume Slider */}
       <input
         type="range"
         min="0"
@@ -104,10 +134,13 @@ export default function GameAudio({ phase }) {
         className="form-range"
         style={{ width: '80px', height: '4px', cursor: 'pointer' }}
         title={`Volume: ${Math.round(volume * 100)}%`}
+        aria-label="Volume musica"
       />
-      
-      {/* Percentage Indicator */}
-      <span className="text-secondary fw-semibold" style={{ fontSize: '11px', width: '28px', textAlign: 'right', userSelect: 'none' }}>
+
+      <span
+        className="text-secondary fw-semibold"
+        style={{ fontSize: '11px', width: '28px', textAlign: 'right', userSelect: 'none' }}
+      >
         {isMuted ? '0%' : `${Math.round(volume * 100)}%`}
       </span>
     </div>

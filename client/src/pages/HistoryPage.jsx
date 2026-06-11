@@ -142,7 +142,7 @@ export default function HistoryPage() {
                         {formatStatus(game.valid)}
                       </td>
                       <td className="px-4 py-3 text-end fw-bold text-primary fs-6">
-                        {game.score} 🪙
+                        {game.score} <i className="bi bi-coin ms-1" aria-label="monete" />
                       </td>
                     </tr>
                   );

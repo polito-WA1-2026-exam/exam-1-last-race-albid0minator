@@ -1,83 +1,57 @@
-import { Link, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 export default function Navigation({ user, onLogout }) {
-  const location = useLocation();
-
-  const isActive = (path) => location.pathname === path;
+  const linkClass = ({ isActive }) =>
+    `nav-link app-nav-link ${isActive ? 'active' : ''}`;
 
   return (
-    <nav className="navbar navbar-expand navbar-dark sticky-top py-2 px-4 shadow-sm app-navbar" id="global-navbar">
-      <div className="container-fluid d-flex align-items-center justify-content-between">
-        
-        {/* Brand/Logo */}
-        <Link className="navbar-brand d-flex align-items-center gap-2 fw-bold fs-4 text-white text-decoration-none" to="/" style={{ letterSpacing: '-0.5px' }} id="navbar-brand-link">
-          <i className="bi bi-train-front text-warning fs-3"></i>
+    <nav className="navbar navbar-dark sticky-top app-navbar" id="global-navbar" aria-label="Navigazione principale">
+      <div className="container-fluid app-navbar__inner">
+        <NavLink className="navbar-brand d-flex align-items-center gap-2 fw-bold text-white text-decoration-none" to="/" id="navbar-brand-link">
+          <span className="app-brand-icon" aria-hidden="true">
+            <i className="bi bi-train-front" />
+          </span>
           <span>Last Race</span>
-        </Link>
+        </NavLink>
 
-        {/* Unified Links Menu */}
-        <div className="d-flex align-items-center gap-1" id="navbar-main-links">
-          <Link 
-            className={`nav-link px-3 py-1.5 rounded-3 transition-all ${isActive('/events') ? 'active' : 'text-white-50 hover-text-white fw-medium'}`} 
-            to="/events"
-            style={{ fontSize: '16.5px' }}
-            id="nav-link-events"
-          >
+        <div className="d-flex align-items-center gap-1 ms-auto" id="navbar-main-links">
+          <NavLink className={linkClass} to="/events" id="nav-link-events">
             Bonus & Malus
-          </Link>
+          </NavLink>
 
           {user ? (
             <>
-              <Link 
-                className={`nav-link px-3 py-1.5 rounded-3 transition-all ${isActive('/history') ? 'active' : 'text-white-50 hover-text-white fw-medium'}`} 
-                to="/history"
-                style={{ fontSize: '16.5px' }}
-                id="nav-link-history"
-              >
+              <NavLink className={linkClass} to="/history" id="nav-link-history">
                 Le mie partite
-              </Link>
-              
-              <Link 
-                className={`nav-link px-3 py-1.5 rounded-3 transition-all ${isActive('/ranking') ? 'active' : 'text-white-50 hover-text-white fw-medium'}`} 
-                to="/ranking"
-                style={{ fontSize: '16.5px' }}
-                id="nav-link-ranking"
-              >
-                Classifica
-              </Link>
-              
-              <Link 
-                className={`nav-link px-3 py-1.5 rounded-3 transition-all ${isActive('/game') ? 'active' : 'text-white-50 hover-text-white fw-medium'}`} 
-                to="/game"
-                style={{ fontSize: '16.5px' }}
-                id="nav-link-game"
-              >
-                Gioca
-              </Link>
+              </NavLink>
 
-              {/* Logout button styled exactly like a nav link */}
-              <button 
-                className="nav-link px-3 py-1.5 rounded-3 transition-all text-white-50 hover-text-white fw-medium border-0 bg-transparent text-start" 
-                type="button" 
+              <NavLink className={linkClass} to="/ranking" id="nav-link-ranking">
+                Classifica
+              </NavLink>
+
+              <NavLink className={({ isActive }) => `${linkClass({ isActive })} app-nav-link--primary`} to="/game" id="nav-link-game">
+                <i className="bi bi-play-fill me-1" aria-hidden="true" />
+                Gioca
+              </NavLink>
+
+              <span className="app-navbar__divider" aria-hidden="true" />
+              <button
+                className="nav-link app-nav-link border-0 bg-transparent"
+                type="button"
                 onClick={onLogout}
-                style={{ fontSize: '16.5px' }}
                 id="btn-logout"
               >
+                <i className="bi bi-box-arrow-right me-2" aria-hidden="true" />
                 Esci
               </button>
             </>
           ) : (
-            <Link 
-              className={`nav-link px-3 py-1.5 rounded-3 transition-all ${isActive('/login') ? 'active' : 'text-white-50 hover-text-white fw-medium'}`} 
-              to="/login"
-              style={{ fontSize: '16.5px' }}
-              id="btn-login"
-            >
+            <NavLink className={({ isActive }) => `${linkClass({ isActive })} app-nav-link--primary`} to="/login" id="btn-login">
+              <i className="bi bi-box-arrow-in-right me-2" aria-hidden="true" />
               Accedi
-            </Link>
+            </NavLink>
           )}
         </div>
-
       </div>
     </nav>
   );

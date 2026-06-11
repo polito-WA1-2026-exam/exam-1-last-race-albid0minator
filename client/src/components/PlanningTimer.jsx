@@ -4,7 +4,7 @@ export default function PlanningTimer({ timeLeft, totalSeconds = 90 }) {
   const isCritical = timeLeft <= 10;
 
   let timerColor = '#475569'; // default slate-600
-  let containerClass = "d-flex align-items-center gap-2 border rounded-pill px-3 py-1.5 bg-white shadow-sm";
+  let containerClass = "planning-timer d-flex align-items-center gap-2 border rounded-pill px-3 bg-white";
   let statusDesc = "Pianifica il tuo tragitto";
 
   if (isCritical) {
@@ -25,8 +25,8 @@ export default function PlanningTimer({ timeLeft, totalSeconds = 90 }) {
       style={{ transition: 'all 0.3s ease' }}
       title={statusDesc}
     >
-      <span className="fs-6 text-secondary d-none d-sm-inline">
-        ⏱️
+      <span className="fs-6 text-secondary" aria-hidden="true">
+        <i className="bi bi-stopwatch" />
       </span>
       <div 
         className={`timer-digits fs-5 fw-bold mb-0 lh-1 ${isPanic ? 'timer-text-pulse' : ''}`} 
@@ -52,7 +52,9 @@ export default function PlanningTimer({ timeLeft, totalSeconds = 90 }) {
           {statusDesc}
         </span>
       )}
+      <span className="visually-hidden" aria-live="polite">
+        {timeLeft} secondi rimanenti. {statusDesc}
+      </span>
     </div>
   );
 }
-
