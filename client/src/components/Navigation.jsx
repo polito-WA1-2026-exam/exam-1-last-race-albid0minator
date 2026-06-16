@@ -42,7 +42,7 @@ export default function Navigation({ user, onLogout }) {
                 id="btn-logout"
               >
                 <i className="bi bi-box-arrow-right me-2" aria-hidden="true" />
-                Esci
+                Disconnetti
               </button>
             </>
           ) : (

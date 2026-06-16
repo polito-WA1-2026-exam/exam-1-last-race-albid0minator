@@ -8,6 +8,7 @@ export default function HomePage({ user }) {
       <div className="p-5 mb-4 hero-panel text-white" id="hero-section">
         <div className="row align-items-center g-4">
           <div className="col-lg-7">
+            <div className="metro-kicker mb-3">Metro Control</div>
             <div className="d-flex align-items-center gap-3 mb-2">
               <i className="bi bi-train-front text-warning" style={{ fontSize: '2.5rem' }}></i>
               <h1 className="display-4 fw-bold mb-0" style={{ letterSpacing: '-1px' }}>Last Race</h1>
@@ -34,7 +35,7 @@ export default function HomePage({ user }) {
             <img 
               src={metroHeroImg} 
               alt="Last Race Subway" 
-              className="img-fluid rounded-4 shadow-lg" 
+              className="img-fluid rounded-4 shadow-lg metro-hero-image"
               style={{ maxHeight: '280px', width: '100%', objectFit: 'cover' }} 
             />
           </div>
@@ -65,9 +66,9 @@ export default function HomePage({ user }) {
       <div className="row row-cols-1 row-cols-md-4 g-4 mb-5" id="game-steps-row">
         {/* Step 1 */}
         <div className="col">
-          <div className="surface-card h-100" id="step-card-1">
+          <div className="surface-card metro-step-card h-100" style={{ '--step-line': '#1e40af' }} id="step-card-1">
             <div className="card-body p-4">
-              <div className="d-inline-flex align-items-center justify-content-center bg-primary bg-gradient text-white rounded-3 mb-3" style={{ width: 50, height: 50 }}>
+              <div className="metro-step-icon d-inline-flex align-items-center justify-content-center rounded-3 mb-3">
                 <i className="bi bi-eye-fill fs-5"></i>
               </div>
               <h5 className="card-title fw-bold">Fase 1: Setup</h5>
@@ -80,9 +81,9 @@ export default function HomePage({ user }) {
 
         {/* Step 2 */}
         <div className="col">
-          <div className="surface-card h-100" id="step-card-2">
+          <div className="surface-card metro-step-card h-100" style={{ '--step-line': '#f59e0b' }} id="step-card-2">
             <div className="card-body p-4">
-              <div className="d-inline-flex align-items-center justify-content-center bg-warning bg-gradient text-dark rounded-3 mb-3" style={{ width: 50, height: 50 }}>
+              <div className="metro-step-icon d-inline-flex align-items-center justify-content-center rounded-3 mb-3 text-dark">
                 <i className="bi bi-alarm-fill fs-5"></i>
               </div>
               <h5 className="card-title fw-bold">Fase 2: Planning</h5>
@@ -95,9 +96,9 @@ export default function HomePage({ user }) {
 
         {/* Step 3 */}
         <div className="col">
-          <div className="surface-card h-100" id="step-card-3">
+          <div className="surface-card metro-step-card h-100" style={{ '--step-line': '#0891b2' }} id="step-card-3">
             <div className="card-body p-4">
-              <div className="d-inline-flex align-items-center justify-content-center bg-info bg-gradient text-white rounded-3 mb-3" style={{ width: 50, height: 50 }}>
+              <div className="metro-step-icon d-inline-flex align-items-center justify-content-center rounded-3 mb-3">
                 <i className="bi bi-lightning-fill fs-5"></i>
               </div>
               <h5 className="card-title fw-bold">Fase 3: Execution</h5>
@@ -110,9 +111,9 @@ export default function HomePage({ user }) {
 
         {/* Step 4 */}
         <div className="col">
-          <div className="surface-card h-100" id="step-card-4">
+          <div className="surface-card metro-step-card h-100" style={{ '--step-line': '#16a34a' }} id="step-card-4">
             <div className="card-body p-4">
-              <div className="d-inline-flex align-items-center justify-content-center bg-success bg-gradient text-white rounded-3 mb-3" style={{ width: 50, height: 50 }}>
+              <div className="metro-step-icon d-inline-flex align-items-center justify-content-center rounded-3 mb-3">
                 <i className="bi bi-flag-fill fs-5"></i>
               </div>
               <h5 className="card-title fw-bold">Fase 4: Risultato</h5>

@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { ReactFlow, Background, Handle, Position } from '@xyflow/react';
+import { ReactFlow, Handle, Position } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
 // Handle invisibile posizionato al centro del nodo.
@@ -144,7 +144,7 @@ export default function NetworkMap({
              (s.from === seg.to_station_id   && s.to === seg.from_station_id)
       );
 
-      const isHovered = hoveredSegment && (
+      const isHovered = showLines && hoveredSegment && (
         (hoveredSegment.from_station_id === seg.from_station_id && hoveredSegment.to_station_id === seg.to_station_id) ||
         (hoveredSegment.from_station_id === seg.to_station_id && hoveredSegment.to_station_id === seg.from_station_id)
       );
@@ -207,9 +207,7 @@ export default function NetworkMap({
         panOnDrag
         zoomOnScroll
         zoomOnDoubleClick={false}
-      >
-        <Background gap={40} size={1} color="#e2e8f0" variant="lines" />
-      </ReactFlow>
+      />
     </div>
   );
 }

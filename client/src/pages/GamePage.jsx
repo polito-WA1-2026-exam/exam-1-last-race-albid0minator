@@ -25,7 +25,6 @@ export default function GamePage() {
   const [endStationId, setEndStationId] = useState(null);
 
   const [selectedSegments, setSelectedSegments] = useState([]);
-  const [hoveredSegment, setHoveredSegment] = useState(null);
   const [timeLeft, setTimeLeft] = useState(PLANNING_SECONDS);
   const [result, setResult] = useState(null);
   const [visibleSteps, setVisibleSteps] = useState(0);
@@ -34,6 +33,8 @@ export default function GamePage() {
   const selectedSegmentsRef = useRef([]);
   const gameIdRef = useRef(null);
   const handleSubmitRef = useRef(null);
+  const initialLoadStartedRef = useRef(false);
+  const submitStartedRef = useRef(false);
 
   useEffect(() => {
     selectedSegmentsRef.current = selectedSegments;
@@ -61,27 +62,28 @@ export default function GamePage() {
   }
 
   function beginPlanning() {
+    submitStartedRef.current = false;
     setSelectedSegments([]);
-    setHoveredSegment(null);
     setTimeLeft(PLANNING_SECONDS);
     setPhase('planning');
   }
 
   function initGame() {
+    submitStartedRef.current = false;
     setPhase('loading');
     setError(null);
     setGameId(null);
     setStartStationId(null);
     setEndStationId(null);
     setSelectedSegments([]);
-    setHoveredSegment(null);
     setResult(null);
     setVisibleSteps(0);
     void loadGameData();
   }
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (initialLoadStartedRef.current) return;
+    initialLoadStartedRef.current = true;
     void loadGameData();
   }, []);
 
@@ -137,12 +139,16 @@ export default function GamePage() {
 
   // ── SUBMIT PERCORSO ───────────────────────────────────────────────────
   const handleSubmit = useCallback(async () => {
+    if (submitStartedRef.current) return;
+
     const currentGameId = gameIdRef.current;
     if (!currentGameId) {
       setError('Partita non pronta. Ricarica la pagina.');
       setPhase('error');
       return;
     }
+
+    submitStartedRef.current = true;
 
     const segments = selectedSegmentsRef.current.map(seg => ({
       from: Number(seg.from),
@@ -271,20 +277,36 @@ export default function GamePage() {
             />
           </div>
 
-          <div className="mt-2 d-flex gap-3 align-items-center flex-wrap flex-shrink-0">
-            <div className="d-flex gap-2 flex-wrap align-items-center">
-              <span className="badge bg-success py-2 px-3">
-                Partenza: <strong>{stationName(startStationId)}</strong>
-              </span>
-              <span className="badge bg-danger py-2 px-3">
-                Arrivo: <strong>{stationName(endStationId)}</strong>
-              </span>
+          <div className="setup-action-bar mt-2 d-flex gap-3 align-items-center flex-shrink-0">
+            <div className="route-summary route-summary--compact flex-grow-1">
+              <div className="route-station route-station--start">
+                <span className="route-station__icon" aria-hidden="true">
+                  <i className="bi bi-geo-alt-fill" />
+                </span>
+                <span>
+                  <span className="route-station__label">Partenza</span>
+                  <strong className="route-station__name">{stationName(startStationId)}</strong>
+                </span>
+              </div>
+
+              <i className="bi bi-arrow-right route-summary__arrow" aria-hidden="true" />
+
+              <div className="route-station route-station--end">
+                <span className="route-station__icon" aria-hidden="true">
+                  <i className="bi bi-flag-fill" />
+                </span>
+                <span>
+                  <span className="route-station__label">Destinazione</span>
+                  <strong className="route-station__name">{stationName(endStationId)}</strong>
+                </span>
+              </div>
             </div>
             <button
-              className="btn btn-brand ms-auto"
+              className="btn btn-brand btn-lg setup-start-button"
               onClick={beginPlanning}
             >
-              Sono pronto — inizia il timer →
+              <i className="bi bi-stopwatch me-2" aria-hidden="true" />
+              Inizia il planning
             </button>
           </div>
         </div>
@@ -298,8 +320,9 @@ export default function GamePage() {
       {phase === 'planning' && (
         <div className="d-flex flex-column flex-grow-1" style={{ minHeight: 0, overflow: 'hidden' }}>
           {/* Top header instructions with audio control & timer */}
-          <div className="mb-2 d-flex justify-content-between align-items-center flex-wrap gap-3 py-2 px-3 game-phase-header">
+          <div className="mb-2 d-flex justify-content-between align-items-center flex-wrap gap-3 py-2 px-3 game-phase-header game-phase-header--control">
             <div>
+              <div className="phase-kicker mb-1">Console di pianificazione</div>
               <h4 className="mb-1 text-primary fw-bold">Fase 2 — Planning</h4>
               <p className="text-muted mb-0 small">
                 Le linee sono nascoste. Scegli i segmenti dalla lista, in ordine, per costruire il percorso.
@@ -337,23 +360,25 @@ export default function GamePage() {
                       currentNodeId={currentNodeId}
                       height="100%"
                       selectedSegments={selectedSegments}
-                      hoveredSegment={hoveredSegment}
                     />
                   </div>
                 </div>
 
                 <div className="d-flex gap-2 align-items-center justify-content-between flex-wrap" style={{ flexShrink: 0 }}>
                   <div className="d-flex align-items-center gap-2">
-                    <span className="badge bg-secondary py-2 px-3 fs-6">
+                    <span className="segment-count">
+                      <i className="bi bi-signpost-split me-2" aria-hidden="true" />
                       Segmenti: <strong>{selectedSegments.length}</strong>
                     </span>
                     {selectedSegments.length > 0 && (
                       <button className="btn btn-outline-secondary btn-sm" onClick={undoLastSegment}>
+                        <i className="bi bi-arrow-counterclockwise me-1" aria-hidden="true" />
                         Annulla ultimo
                       </button>
                     )}
                     {selectedSegments.length > 0 && (
                       <button className="btn btn-outline-danger btn-sm" onClick={() => { setSelectedSegments([]); }}>
+                        <i className="bi bi-trash3 me-1" aria-hidden="true" />
                         Azzera percorso
                       </button>
                     )}
@@ -363,7 +388,8 @@ export default function GamePage() {
                     className="btn btn-primary ms-auto"
                     onClick={() => void handleSubmit()}
                   >
-                    Conferma percorso →
+                    Conferma percorso
+                    <i className="bi bi-arrow-right ms-2" aria-hidden="true" />
                   </button>
                 </div>
               </div>
@@ -373,26 +399,28 @@ export default function GamePage() {
               <div className="d-flex flex-column gap-2 flex-grow-1" style={{ minHeight: 0, overflow: 'hidden' }}>
                 {/* Indicazione Partenza e Destinazione */}
                 <div className="route-endpoints-card">
-                  <div className="card-body py-2 px-3">
-                    <div className="d-flex align-items-center justify-content-center gap-3">
-                      <div className="d-flex align-items-center gap-2">
-                        <span className="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold text-white bg-success shadow-sm" style={{ width: '22px', height: '22px', fontSize: '9px', minWidth: '22px' }}>
-                          DA
+                  <div className="card-body p-3">
+                    <div className="route-summary">
+                      <div className="route-station route-station--start">
+                        <span className="route-station__icon" aria-hidden="true">
+                          <i className="bi bi-geo-alt-fill" />
                         </span>
-                        <span className="text-secondary fw-bold" style={{ fontSize: '13.5px' }}>
-                          {stationName(startStationId)}
-                        </span>
+                        <div>
+                          <span className="route-station__label">Partenza</span>
+                          <strong className="route-station__name">{stationName(startStationId)}</strong>
+                        </div>
                       </div>
-                      
-                      <i className="bi bi-arrow-right text-muted" aria-hidden="true" />
-                      
-                      <div className="d-flex align-items-center gap-2">
-                        <span className="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold text-white bg-danger shadow-sm" style={{ width: '22px', height: '22px', fontSize: '9px', minWidth: '22px' }}>
-                          A
+
+                      <i className="bi bi-arrow-right route-summary__arrow" aria-hidden="true" />
+
+                      <div className="route-station route-station--end">
+                        <span className="route-station__icon" aria-hidden="true">
+                          <i className="bi bi-flag-fill" />
                         </span>
-                        <span className="text-secondary fw-bold" style={{ fontSize: '13.5px' }}>
-                          {stationName(endStationId)}
-                        </span>
+                        <div>
+                          <span className="route-station__label">Destinazione</span>
+                          <strong className="route-station__name">{stationName(endStationId)}</strong>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -404,7 +432,6 @@ export default function GamePage() {
                   selectedSegments={selectedSegments}
                   stationName={stationName}
                   onSegmentSelect={handleSegmentSelect}
-                  onSegmentHover={setHoveredSegment}
                 />
               </div>
             </div>

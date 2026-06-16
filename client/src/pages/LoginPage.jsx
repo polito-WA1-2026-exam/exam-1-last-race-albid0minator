@@ -87,7 +87,7 @@ export default function LoginPage({ onLogin, user }) {
             </div>
           )}
           
-          <button className="btn btn-primary btn-lg w-100 py-2.5 fw-semibold fs-6 border-0 bg-gradient shadow-sm" type="submit" disabled={loading}>
+          <button className="btn login-submit-button btn-lg w-100 py-2.5 fw-semibold fs-6 shadow-sm" type="submit" disabled={loading}>
             {loading ? (
               <span className="d-flex align-items-center justify-content-center gap-2">
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>

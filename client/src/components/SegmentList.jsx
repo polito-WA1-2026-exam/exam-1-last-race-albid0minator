@@ -13,15 +13,15 @@ export default function SegmentList({
 }) {
   const [filterQuery, setFilterQuery] = useState('');
 
-  const segmentUsageCounts = useMemo(() => {
-    const counts = new Map();
+  const selectedSegmentOrder = useMemo(() => {
+    const order = new Map();
 
-    for (const seg of selectedSegments) {
+    selectedSegments.forEach((seg, index) => {
       const key = segmentKey(seg.from, seg.to);
-      counts.set(key, (counts.get(key) ?? 0) + 1);
-    }
+      order.set(key, index + 1);
+    });
 
-    return counts;
+    return order;
   }, [selectedSegments]);
 
   const sortedSegments = useMemo(
@@ -46,17 +46,20 @@ export default function SegmentList({
   // Float selected segments to the top of the list
   const finalSegments = useMemo(() => {
     return [...filteredSegments].sort((a, b) => {
-      const isSelectedA = (segmentUsageCounts.get(segmentKey(a.from_station_id, a.to_station_id)) ?? 0) > 0;
-      const isSelectedB = (segmentUsageCounts.get(segmentKey(b.from_station_id, b.to_station_id)) ?? 0) > 0;
+      const orderA = selectedSegmentOrder.get(segmentKey(a.from_station_id, a.to_station_id));
+      const orderB = selectedSegmentOrder.get(segmentKey(b.from_station_id, b.to_station_id));
+      const isSelectedA = orderA !== undefined;
+      const isSelectedB = orderB !== undefined;
 
       if (isSelectedA && !isSelectedB) return -1;
       if (!isSelectedA && isSelectedB) return 1;
+      if (isSelectedA && isSelectedB) return orderA - orderB;
       
       const labelA = `${stationName(a.from_station_id)} ${stationName(a.to_station_id)}`;
       const labelB = `${stationName(b.from_station_id)} ${stationName(b.to_station_id)}`;
       return labelA.localeCompare(labelB, 'it');
     });
-  }, [filteredSegments, segmentUsageCounts, stationName]);
+  }, [filteredSegments, selectedSegmentOrder, stationName]);
 
   return (
     <div className="surface-card surface-card--flat segment-panel d-flex flex-column">
@@ -99,7 +102,10 @@ export default function SegmentList({
           finalSegments.map(seg => {
             const fromName = stationName(seg.from_station_id);
             const toName = stationName(seg.to_station_id);
-            const isSelected = (segmentUsageCounts.get(segmentKey(seg.from_station_id, seg.to_station_id)) ?? 0) > 0;
+            const selectionOrder = selectedSegmentOrder.get(
+              segmentKey(seg.from_station_id, seg.to_station_id)
+            );
+            const isSelected = selectionOrder !== undefined;
 
             return (
               <button
@@ -111,13 +117,17 @@ export default function SegmentList({
                 onMouseLeave={() => onSegmentHover?.(null)}
                 aria-pressed={isSelected}
               >
-                <span className="text-start small fw-semibold">
-                  {fromName} - {toName}
+                <span className="d-flex align-items-center gap-2 text-start small fw-semibold">
+                  {isSelected && (
+                    <span className="segment-order" aria-label={`Passo ${selectionOrder}`}>
+                      {selectionOrder}
+                    </span>
+                  )}
+                  <span>{fromName} - {toName}</span>
                 </span>
                 {isSelected && (
                   <span className="badge bg-warning text-dark flex-shrink-0">
-                    <i className="bi bi-check-lg me-1" aria-hidden="true" />
-                    Selezionato
+                    Passo {selectionOrder}
                   </span>
                 )}
               </button>
