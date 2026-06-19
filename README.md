@@ -1,5 +1,5 @@
 # Exam #1: "Last Race"
-## Student: sXXXXXX COGNOME NOME
+## Student: s361878 BOR ALBERTO
 
 > **Avvio:** `cd server && nodemon index.js` (porta 3001) · `cd client && npm run dev` (porta 5173)  
 > Il database SQLite pre-seedato è incluso nel repository (`server/database.db`).
@@ -132,4 +132,4 @@ Alice e Bob hanno partite già giocate nel database.
 
 ## Use of AI Tools
 
-Claude (via Cursor / Claude Code) è stato utilizzato per la struttura iniziale delle API Express, la logica di validazione del percorso, il seed del database e componenti React. Tutto il codice generato è stato revisionato manualmente, testato avviando server e client, e adattato per rispettare i vincoli del progetto (SPA, validazione server-side, assenza di `console.log` nel client, protezione route).
+Claude e Codex è stato utilizzato per la struttura iniziale delle API Express, la logica di validazione del percorso, e per controllare che i componenti react scritti fossero corretti e producessero il risultato sperato  componenti React. Tutto il codice generato è stato revisionato manualmente, testato avviando server e client, e adattato per rispettare i vincoli del progetto  nel client, protezione route.
