@@ -1,4 +1,3 @@
-node_modules/
-.DS_Store
-Desktop.ini
-Thumbs.db
+gen_network.js
+db/init_db.js
+db/network.json
