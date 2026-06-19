@@ -137,7 +137,7 @@ export default function GamePage() {
 
   const stationName = id => stationById.get(id)?.name ?? `#${id}`;
 
-  // ── SUBMIT PERCORSO ───────────────────────────────────────────────────
+  // SUBMIT PERCORSO 
   const handleSubmit = useCallback(async () => {
     if (submitStartedRef.current) return;
 
@@ -172,7 +172,7 @@ export default function GamePage() {
     handleSubmitRef.current = handleSubmit;
   }, [handleSubmit]);
 
-  // ── GESTIONE SEGMENTI ─────────────────────────────────────────────────
+  // GESTIONE SEGMENTI 
   // Il verso A→B / B→A non conta: conta solo la coppia di stazioni e la continuità col percorso.
   function orientSegmentForPath(seg, anchorStationId) {
     const a = Number(seg.from_station_id);
@@ -210,7 +210,7 @@ export default function GamePage() {
     setSelectedSegments(prev => prev.slice(0, -1));
   }
 
-  // ── RENDERING ─────────────────────────────────────────────────────────
+  // RENDERING 
 
   if (phase === 'loading' || phase === 'submitting') {
     return (
@@ -253,7 +253,7 @@ export default function GamePage() {
       }}
     >
 
-      {/* ── SETUP (Fase 1) ──────────────────────────────────────────────── */}
+      {/* ── SETUP (Fase 1)  */}
       {phase === 'setup' && (
         <div className="d-flex flex-column flex-grow-1" style={{ minHeight: 0, overflow: 'hidden' }}>
           <div className="flex-shrink-0">
@@ -445,8 +445,8 @@ export default function GamePage() {
           <div className="d-flex align-items-center gap-3 mb-3 flex-wrap">
             <h4 className="mb-0">Fase 3 — Esecuzione</h4>
             {result.valid && (
-              <span className="badge bg-primary fs-6 ms-auto">
-                <i className="bi bi-coin me-1" aria-hidden="true" /> {currentCoins} monete
+              <span className="metro-coin-badge ms-auto">
+                <i className="bi bi-coin" aria-hidden="true" /> {currentCoins}
               </span>
             )}
           </div>
@@ -459,25 +459,30 @@ export default function GamePage() {
 
           {result.valid && (
             <>
-              {result.steps.slice(0, visibleSteps).map((step, i) => (
-                <div key={i} className="card mb-2 step-fade-in">
-                  <div className="card-body py-2 d-flex align-items-center gap-2 flex-wrap">
-                    <span>
-                      <strong>Passo {step.stepOrder}:</strong>{' '}
-                      {stationName(step.fromStationId)} → {stationName(step.toStationId)}
-                    </span>
-                    <span className="text-muted mx-1">|</span>
-                    <span>{step.event.description}</span>
-                    <span className={`badge ${step.event.effect >= 0 ? 'bg-success' : 'bg-danger'}`}>
-                      {step.event.effect >= 0 ? '+' : ''}{step.event.effect}
-                    </span>
-                    <span className="ms-auto fw-bold">
-                      <i className="bi bi-coin me-1" aria-hidden="true" />
-                      {step.coinsAfter}
-                    </span>
-                  </div>
+              {visibleSteps > 0 && (
+                <div className="metro-departure-board">
+                  {result.steps.slice(0, visibleSteps).map((step, i) => (
+                    <div key={i} className="metro-departure-row">
+                      <span className="metro-departure-step" aria-label={`Passo ${step.stepOrder}`}>
+                        {step.stepOrder}
+                      </span>
+                      <span className="metro-departure-stations">
+                        {stationName(step.fromStationId)}
+                        <i className="bi bi-arrow-right mx-1" aria-hidden="true" />
+                        {stationName(step.toStationId)}
+                      </span>
+                      <span className="metro-departure-event">{step.event.description}</span>
+                      <span className={`metro-departure-effect ${step.event.effect >= 0 ? 'metro-departure-effect--pos' : 'metro-departure-effect--neg'}`}>
+                        {step.event.effect >= 0 ? '+' : ''}{step.event.effect}
+                      </span>
+                      <span className="metro-departure-coins">
+                        <i className="bi bi-coin me-1" aria-hidden="true" />
+                        {step.coinsAfter}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
 
               <div className="d-flex align-items-center gap-3 mt-3">
                 {visibleSteps < result.steps.length ? (

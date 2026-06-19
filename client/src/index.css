@@ -1,3 +1,6 @@
+/* Google Fonts — display font per timer, punteggi e monete */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap');
+
 /* ── Last Race — Design tokens (Metro Control Minimal) ── */
 :root {
   color-scheme: light;
@@ -34,6 +37,7 @@
 
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-mono: ui-monospace, 'Courier New', Consolas, monospace;
+  --font-display: 'Orbitron', ui-monospace, 'Courier New', Consolas, monospace;
 
   /* Bootstrap overrides */
   --bs-body-bg: var(--bg-page);
@@ -618,8 +622,7 @@ body {
   line-height: 1;
 }
 
-/* ── Audio and timer controls ── */
-.planning-timer,
+/* ── Audio controls ── */
 .audio-controls {
   min-height: 2.35rem;
   box-shadow: var(--shadow-sm);
@@ -627,6 +630,64 @@ body {
 
 .audio-toggle {
   width: 1.5rem;
+}
+
+/* ── Planning timer — display a tema chiaro ── */
+.planning-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--brand);
+  border-radius: var(--radius-sm);
+  padding: 0.38rem 0.85rem;
+  min-height: 2.35rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.planning-timer__label {
+  color: var(--text-muted);
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.planning-timer__digits {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  line-height: 1;
+  min-width: 2.9rem;
+  text-align: center;
+  display: inline-block;
+}
+
+.planning-timer__bar {
+  display: inline-block;
+  width: 44px;
+  height: 3px;
+  background: var(--border-subtle);
+  border-radius: 999px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.planning-timer__bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+}
+
+.planning-timer__status {
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
 }
 
 /* ── React Flow map ── */
@@ -702,6 +763,127 @@ input:-webkit-autofill:active {
   clip-path: inset(-10px -10px -10px 0);
 }
 
+/* ── Badge monete fase execution ── */
+.metro-coin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+  border-radius: var(--radius-sm);
+  padding: 0.3rem 0.75rem;
+}
+
+/* ── Tabellone partenze (fase execution) ── */
+.metro-departure-board {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1rem;
+}
+
+.metro-departure-board::before {
+  content: "";
+  display: block;
+  height: 3px;
+  background: linear-gradient(90deg, #ef4444, #f59e0b, #16a34a, #0891b2, #6d28d9);
+}
+
+.metro-departure-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  animation: step-slide-in 0.3s ease-out forwards;
+}
+
+.metro-departure-row:last-child {
+  border-bottom: none;
+}
+
+.metro-departure-step {
+  flex-shrink: 0;
+  width: 1.8rem;
+  height: 1.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #08111f;
+  color: #fbbf24;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: 4px;
+}
+
+.metro-departure-stations {
+  flex-shrink: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.metro-departure-event {
+  flex: 1 1 auto;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-style: italic;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metro-departure-effect {
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.18rem 0.45rem;
+  border-radius: 3px;
+  letter-spacing: 0.5px;
+}
+
+.metro-departure-effect--pos {
+  color: #166534;
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+}
+
+.metro-departure-effect--neg {
+  color: #991b1b;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+}
+
+.metro-departure-coins {
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  min-width: 3.5rem;
+  text-align: right;
+}
+
+/* ── Display font su punteggi ── */
+.result-score {
+  font-family: var(--font-display);
+}
+
+.ranking-score-cell {
+  font-family: var(--font-display);
+  letter-spacing: 1px;
+}
+
 .login-submit-button {
   color: #0f172a !important;
   background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
@@ -757,9 +939,9 @@ input:-webkit-autofill:active {
 }
 
 .timer-digits {
-  font-family: var(--font-mono);
-  font-weight: 900;
-  letter-spacing: -2px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 2px;
 }
 
 @keyframes step-slide-in {
@@ -797,6 +979,82 @@ input:-webkit-autofill:active {
 .table-app th,
 .table-app td {
   border-color: var(--border-subtle);
+}
+
+/* ── Metro section line marker ── */
+.metro-section-line {
+  width: 4px;
+  height: 1.8rem;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #1e40af, #f59e0b 33%, #0891b2 66%, #16a34a);
+  flex-shrink: 0;
+}
+
+/* ── Metro route strip (home — fasi come fermate) ── */
+.metro-route-strip {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .metro-route-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    position: relative;
+    padding: 0.65rem 0 0.85rem;
+  }
+
+  .metro-route-strip::before {
+    content: "";
+    position: absolute;
+    top: calc(0.65rem + 0.95rem);
+    left: 12.5%;
+    right: 12.5%;
+    height: 3px;
+    background: linear-gradient(90deg, #1e40af, #f59e0b 33%, #0891b2 66%, #16a34a);
+    border-radius: 2px;
+    z-index: 0;
+  }
+}
+
+.metro-route-stop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  position: relative;
+  z-index: 1;
+}
+
+.metro-route-stop__dot {
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.82rem;
+  border: 3px solid var(--bg-page);
+}
+
+.metro-route-stop__name {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+/* ── Mini metro schematic SVG (home — network card) ── */
+.mini-metro-map {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  display: block;
+  margin: 0 auto 0.75rem;
 }
 
 @media (prefers-reduced-motion: reduce) {

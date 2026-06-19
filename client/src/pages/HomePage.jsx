@@ -61,8 +61,31 @@ export default function HomePage({ user }) {
       )}
 
       {/* Regole del Gioco */}
-      <h2 className="fw-bold mb-4" id="section-rules-title">Come Funziona il Gioco</h2>
-      
+      <div className="d-flex align-items-center gap-3 mb-3">
+        <div className="metro-section-line" aria-hidden="true" />
+        <h2 className="fw-bold mb-0" id="section-rules-title">Come Funziona il Gioco</h2>
+      </div>
+
+      {/* Metro route strip — le 4 fasi come fermate su un tracciato */}
+      <div className="metro-route-strip mb-3" aria-hidden="true">
+        <div className="metro-route-stop">
+          <div className="metro-route-stop__dot" style={{ background: '#1e40af', color: '#fff' }}>1</div>
+          <div className="metro-route-stop__name">Setup</div>
+        </div>
+        <div className="metro-route-stop">
+          <div className="metro-route-stop__dot" style={{ background: '#f59e0b', color: '#0f172a' }}>2</div>
+          <div className="metro-route-stop__name">Planning</div>
+        </div>
+        <div className="metro-route-stop">
+          <div className="metro-route-stop__dot" style={{ background: '#0891b2', color: '#fff' }}>3</div>
+          <div className="metro-route-stop__name">Execution</div>
+        </div>
+        <div className="metro-route-stop">
+          <div className="metro-route-stop__dot" style={{ background: '#16a34a', color: '#fff' }}>4</div>
+          <div className="metro-route-stop__name">Risultato</div>
+        </div>
+      </div>
+
       <div className="row row-cols-1 row-cols-md-4 g-4 mb-5" id="game-steps-row">
         {/* Step 1 */}
         <div className="col">
@@ -160,8 +183,59 @@ export default function HomePage({ user }) {
         <div className="col-md-5">
           <div className="surface-card p-4 h-100" id="network-info-card">
             <h4 className="fw-bold mb-3">La Nostra Rete Metro</h4>
+
+            {/* Mini SVG metro schematic — illustrativo */}
+            <svg className="mini-metro-map" viewBox="0 0 210 145" aria-hidden="true" focusable="false">
+              <rect width="210" height="145" fill="#f8fafc" rx="6"/>
+              {/* Line D vertical (amber) */}
+              <line x1="105" y1="15" x2="105" y2="112" stroke="#f59e0b" strokeWidth="3" strokeLinecap="round"/>
+              {/* Line A horizontal (red) */}
+              <line x1="15" y1="32" x2="195" y2="32" stroke="#ef4444" strokeWidth="3" strokeLinecap="round"/>
+              {/* Line B horizontal (blue) */}
+              <line x1="15" y1="63" x2="195" y2="63" stroke="#1e40af" strokeWidth="3" strokeLinecap="round"/>
+              {/* Line C horizontal (green) */}
+              <line x1="15" y1="94" x2="195" y2="94" stroke="#16a34a" strokeWidth="3" strokeLinecap="round"/>
+              {/* Stations on A */}
+              <circle cx="15" cy="32" r="5" fill="#fff" stroke="#ef4444" strokeWidth="2"/>
+              <circle cx="60" cy="32" r="5" fill="#fff" stroke="#ef4444" strokeWidth="2"/>
+              <circle cx="150" cy="32" r="5" fill="#fff" stroke="#ef4444" strokeWidth="2"/>
+              <circle cx="195" cy="32" r="5" fill="#fff" stroke="#ef4444" strokeWidth="2"/>
+              {/* Stations on B */}
+              <circle cx="15" cy="63" r="5" fill="#fff" stroke="#1e40af" strokeWidth="2"/>
+              <circle cx="60" cy="63" r="5" fill="#fff" stroke="#1e40af" strokeWidth="2"/>
+              <circle cx="150" cy="63" r="5" fill="#fff" stroke="#1e40af" strokeWidth="2"/>
+              <circle cx="195" cy="63" r="5" fill="#fff" stroke="#1e40af" strokeWidth="2"/>
+              {/* Stations on C */}
+              <circle cx="15" cy="94" r="5" fill="#fff" stroke="#16a34a" strokeWidth="2"/>
+              <circle cx="60" cy="94" r="5" fill="#fff" stroke="#16a34a" strokeWidth="2"/>
+              <circle cx="150" cy="94" r="5" fill="#fff" stroke="#16a34a" strokeWidth="2"/>
+              <circle cx="195" cy="94" r="5" fill="#fff" stroke="#16a34a" strokeWidth="2"/>
+              {/* Line D endpoints */}
+              <circle cx="105" cy="15" r="5" fill="#fff" stroke="#f59e0b" strokeWidth="2"/>
+              <circle cx="105" cy="112" r="5" fill="#fff" stroke="#f59e0b" strokeWidth="2"/>
+              {/* Interchanges (D incrocia A, B, C) */}
+              <circle cx="105" cy="32" r="8" fill="#fff" stroke="#0f172a" strokeWidth="2"/>
+              <circle cx="105" cy="32" r="3.5" fill="#0f172a"/>
+              <circle cx="105" cy="63" r="8" fill="#fff" stroke="#0f172a" strokeWidth="2"/>
+              <circle cx="105" cy="63" r="3.5" fill="#0f172a"/>
+              <circle cx="105" cy="94" r="8" fill="#fff" stroke="#0f172a" strokeWidth="2"/>
+              <circle cx="105" cy="94" r="3.5" fill="#0f172a"/>
+              {/* Legend */}
+              <rect x="8" y="122" width="12" height="4" fill="#ef4444" rx="2"/>
+              <text x="23" y="126.5" fill="#64748b" fontSize="7" fontFamily="sans-serif">A</text>
+              <rect x="35" y="122" width="12" height="4" fill="#1e40af" rx="2"/>
+              <text x="50" y="126.5" fill="#64748b" fontSize="7" fontFamily="sans-serif">B</text>
+              <rect x="62" y="122" width="12" height="4" fill="#16a34a" rx="2"/>
+              <text x="77" y="126.5" fill="#64748b" fontSize="7" fontFamily="sans-serif">C</text>
+              <rect x="89" y="122" width="12" height="4" fill="#f59e0b" rx="2"/>
+              <text x="104" y="126.5" fill="#64748b" fontSize="7" fontFamily="sans-serif">D</text>
+              <circle cx="122" cy="124" r="4.5" fill="#fff" stroke="#0f172a" strokeWidth="1.5"/>
+              <circle cx="122" cy="124" r="2" fill="#0f172a"/>
+              <text x="130" y="126.5" fill="#64748b" fontSize="7" fontFamily="sans-serif">= interscambio</text>
+            </svg>
+
             <p className="text-muted small">
-              La metropolitana cittadina è strutturata su una griglia fissa ordinata e parallela di <strong>4x5 stazioni</strong>.
+              La rete è composta da <strong>4 linee</strong> e almeno <strong>12 stazioni</strong>, con 3 stazioni di interscambio.
             </p>
             <div className="bg-light p-3 rounded-3 border mb-3">
               <h6 className="fw-bold mb-2">Composizione:</h6>

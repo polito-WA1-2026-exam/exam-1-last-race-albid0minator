@@ -73,7 +73,7 @@ export default function RankingPage() {
                     <td className="ps-4 py-3">{rankDisplay(i)}</td>
                     <td className="py-3 fw-semibold">{entry.name}</td>
                     <td className="py-3 text-end text-muted">{entry.games_played}</td>
-                    <td className="pe-4 py-3 text-end fw-bold text-primary fs-6">
+                    <td className="pe-4 py-3 text-end fw-bold text-primary fs-6 ranking-score-cell">
                       {entry.best_score} <i className="bi bi-coin ms-1" aria-label="monete" />
                     </td>
                   </tr>
