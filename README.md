@@ -1,7 +1,8 @@
 # Exam #1: "Last Race"
 ## Student: s361878 BOR ALBERTO
 
-> **How to run:** `cd server && npm install && nodemon index.js` (port 3001), then `cd client && npm install && npm run dev` (port 5173).  
+> **Required launch commands:** `cd server && npm install && nodemon index.js` (port 3001), then `cd client && npm install && npm run dev` (port 5173).  
+> The backend can also be started without Nodemon by running `cd server && npm run dev`.
 > The pre-seeded SQLite database is included in the repository as `server/database.db`.
 
 ---
@@ -109,11 +110,17 @@ The committed database contains 8 lines, 28 stations, more than 3 interchange st
 | File | Content |
 |------|-----------|
 | `img/ranking.png` | General ranking page |
-| `img/game.png` | Game screen during a match |
+| `img/game.png` | Game Setup phase with the complete metro network |
+| `img/homepage.png` | Public home page with game instructions |
+| `img/gamefase.png` | Planning phase with hidden lines, timer, and segment list |
 
 ![General ranking](./img/ranking.png)
 
-![During a game](./img/game.png)
+![Game Setup phase](./img/game.png)
+
+![Public home page](./img/homepage.png)
+
+![Game Planning phase](./img/gamefase.png)
 
 ---
 

@@ -49,4 +49,8 @@ app.use((err, req, res, next) => {
   return res.status(500).json({ error: 'Errore interno del server.' });
 });
 
-app.listen(PORT);
+app.listen(PORT, () => {
+  if (process.env.NODE_ENV !== 'production') {
+    console.info(`Server ready at http://localhost:${PORT}`);
+  }
+});
