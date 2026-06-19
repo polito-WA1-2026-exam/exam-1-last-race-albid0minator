@@ -95,7 +95,6 @@ The committed database contains 8 lines, 28 stations, more than 3 interchange st
 | `NetworkMap` | `components/NetworkMap.jsx` | Metro network map: full lines during Setup, stations only during Planning. |
 | `SegmentList` | `components/SegmentList.jsx` | Searchable list of selectable connected station pairs. |
 | `PlanningTimer` | `components/PlanningTimer.jsx` | 90-second planning timer with visual feedback and automatic submit trigger. |
-| `GameAudio` | `components/GameAudio.jsx` | Optional ambient audio used during the Planning phase. |
 | `HomePage` | `pages/HomePage.jsx` | Public instructions and game overview. |
 | `LoginPage` | `pages/LoginPage.jsx` | Login form and client-side validation. |
 | `GamePage` | `pages/GamePage.jsx` | Main game orchestrator for Setup, Planning, Execution, and Result. |

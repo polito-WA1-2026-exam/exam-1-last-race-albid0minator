@@ -622,16 +622,6 @@ body {
   line-height: 1;
 }
 
-/* ── Audio controls ── */
-.audio-controls {
-  min-height: 2.35rem;
-  box-shadow: var(--shadow-sm);
-}
-
-.audio-toggle {
-  width: 1.5rem;
-}
-
 /* ── Planning timer — display a tema chiaro ── */
 .planning-timer {
   display: inline-flex;

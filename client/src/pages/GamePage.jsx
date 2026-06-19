@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import NetworkMap from '../components/NetworkMap.jsx';
 import PlanningTimer from '../components/PlanningTimer.jsx';
-import { GameAudioProvider, GameAudioControls } from '../components/GameAudio.jsx';
 import SegmentList from '../components/SegmentList.jsx';
 import { getNetwork, createGame, submitGame } from '../API.js';
 
@@ -242,7 +241,6 @@ export default function GamePage() {
   const gameViewportHeight = 'calc(100dvh - 88px)';
 
   return (
-    <GameAudioProvider phase={phase}>
     <div
       className="container-fluid px-4 pt-2 pb-3 d-flex flex-column"
       style={{
@@ -319,7 +317,7 @@ export default function GamePage() {
       */}
       {phase === 'planning' && (
         <div className="d-flex flex-column flex-grow-1" style={{ minHeight: 0, overflow: 'hidden' }}>
-          {/* Top header instructions with audio control & timer */}
+          {/* Top header instructions with timer */}
           <div className="mb-2 d-flex justify-content-between align-items-center flex-wrap gap-3 py-2 px-3 game-phase-header game-phase-header--control">
             <div>
               <div className="phase-kicker mb-1">Console di pianificazione</div>
@@ -330,7 +328,6 @@ export default function GamePage() {
             </div>
             <div className="d-flex align-items-center gap-3">
               <PlanningTimer timeLeft={timeLeft} totalSeconds={PLANNING_SECONDS} />
-              <GameAudioControls />
             </div>
           </div>
 
@@ -553,6 +550,5 @@ export default function GamePage() {
       )}
 
     </div>
-    </GameAudioProvider>
   );
 }
