@@ -93,7 +93,14 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage user={user} />} />
         <Route path="/login" element={<LoginPage onLogin={setUser} user={user} />} />
-        <Route path="/events" element={<EventsPage />} />
+        <Route
+          path="/events"
+          element={
+            <ProtectedRoute user={user}>
+              <EventsPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/game"
           element={

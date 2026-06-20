@@ -48,7 +48,7 @@ router.get('/ranking', isLoggedIn, async (req, res, next) => {
   }
 });
 
-router.get('/events', async (req, res, next) => {
+router.get('/events', isLoggedIn, async (req, res, next) => {
   try {
     const events = await getEvents();
     return res.json(events);
