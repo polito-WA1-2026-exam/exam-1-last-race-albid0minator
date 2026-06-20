@@ -16,7 +16,7 @@
 | `/game` | Full game flow: Setup, Planning (90 seconds), Execution, and Result. | Registered users only |
 | `/ranking` | General ranking showing the best score for each player. | Registered users only |
 | `/history` | Paginated personal game history. | Registered users only |
-| `/events` | Public list of all bonus and malus events with description and coin effect. | Everyone |
+| `/events` | List of all bonus and malus events with description and coin effect. | Registered users only |
 | `*` | Unknown routes redirect to `/`. | Everyone |
 
 ---
@@ -49,7 +49,7 @@ Common prefix: `/api/`. Authentication uses Passport.js with session cookies. Pr
 - **GET `/api/ranking`** *(protected)*
   - Response (200): array of `{ user_id, name, best_score, games_played }`, ordered by decreasing `best_score`.
 
-- **GET `/api/events`**
+- **GET `/api/events`** *(protected)*
   - Response (200): array of `{ id, description, effect }`, where `effect` is an integer from -4 to +4.
 
 ### Games
@@ -84,7 +84,7 @@ Common prefix: `/api/`. Authentication uses Passport.js with session cookies. Pr
 | `games` | Played or pending games: user, start/end stations, final `score`, `valid` state, and `played_at`. |
 | `game_steps` | Execution steps for valid games: segment, event applied, order, and resulting coins. |
 
-The committed database contains 8 lines, 28 stations, more than 3 interchange stations, 9 events, 3 registered users, and already played games for multiple users.
+The committed database contains 8 lines, 40 stations (19 interchange stations = 47.5%), 9 events, 3 registered users, and already played games for multiple users.
 
 ---
 
