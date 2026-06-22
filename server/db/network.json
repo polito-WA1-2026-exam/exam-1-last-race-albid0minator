@@ -241,14 +241,14 @@
     {
       "id": 29,
       "name": "Porte de Vincennes",
-      "x": 760,
+      "x": 810,
       "y": 240,
       "is_interchange": false
     },
     {
       "id": 30,
       "name": "Saint-Mandé",
-      "x": 840,
+      "x": 950,
       "y": 240,
       "is_interchange": false
     },

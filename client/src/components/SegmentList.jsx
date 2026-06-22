@@ -35,10 +35,11 @@ export default function SegmentList({
 
   const filteredSegments = useMemo(() => {
     if (!filterQuery.trim()) return sortedSegments;
-    const query = filterQuery.toLowerCase().trim();
+    const normalize = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    const query = normalize(filterQuery.trim());
     return sortedSegments.filter(seg => {
-      const fromName = stationName(seg.from_station_id).toLowerCase();
-      const toName = stationName(seg.to_station_id).toLowerCase();
+      const fromName = normalize(stationName(seg.from_station_id));
+      const toName = normalize(stationName(seg.to_station_id));
       return fromName.includes(query) || toName.includes(query);
     });
   }, [sortedSegments, filterQuery, stationName]);

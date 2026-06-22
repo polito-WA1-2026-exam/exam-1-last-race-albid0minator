@@ -439,11 +439,9 @@ body {
 
 .route-station__name {
   display: block;
-  overflow: hidden;
   font-size: 0.95rem;
   line-height: 1.25;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  word-break: break-word;
 }
 
 .route-summary__arrow {
