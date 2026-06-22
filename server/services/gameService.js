@@ -130,19 +130,17 @@ export async function submitGameRoute(userId, gameId, segments) {
   for (let i = 0; i < orientedSegments.length; i++) {
     const event = events[Math.floor(Math.random() * events.length)];
     coins += event.effect;
-    const coinsAfter = Math.max(0, coins);
-    await addGameStep(gameId, i + 1, orientedSegments[i].from, orientedSegments[i].to, event.id, coinsAfter);
+    await addGameStep(gameId, i + 1, orientedSegments[i].from, orientedSegments[i].to, event.id, coins);
     steps.push({
       stepOrder: i + 1,
       fromStationId: orientedSegments[i].from,
       toStationId: orientedSegments[i].to,
       event: { id: event.id, description: event.description, effect: event.effect },
-      coinsAfter,
+      coinsAfter: coins,
     });
-    coins = coinsAfter;
   }
 
-  const finalScore = coins;
+  const finalScore = Math.max(0, coins);
   await dbRun('UPDATE games SET valid = 1, score = ? WHERE id = ?', [finalScore, gameId]);
 
   return { valid: true, steps, finalScore };

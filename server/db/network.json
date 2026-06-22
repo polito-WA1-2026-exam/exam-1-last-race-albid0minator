@@ -1,0 +1,776 @@
+{
+  "lines": [
+    {
+      "id": 1,
+      "name": "Rossa",
+      "color": "#E53935"
+    },
+    {
+      "id": 2,
+      "name": "Verde",
+      "color": "#43A047"
+    },
+    {
+      "id": 3,
+      "name": "Blu",
+      "color": "#1E88E5"
+    },
+    {
+      "id": 4,
+      "name": "Indaco",
+      "color": "#3F51B5"
+    },
+    {
+      "id": 5,
+      "name": "Gialla",
+      "color": "#FDD835"
+    },
+    {
+      "id": 6,
+      "name": "Viola",
+      "color": "#8E24AA"
+    },
+    {
+      "id": 7,
+      "name": "Arancione",
+      "color": "#FB8C00"
+    },
+    {
+      "id": 8,
+      "name": "Azzurra",
+      "color": "#00ACC1"
+    }
+  ],
+  "stations": [
+    {
+      "id": 1,
+      "name": "Châtelet",
+      "x": 400,
+      "y": 240,
+      "is_interchange": true
+    },
+    {
+      "id": 2,
+      "name": "Louvre - Rivoli",
+      "x": 500,
+      "y": 240,
+      "is_interchange": true
+    },
+    {
+      "id": 3,
+      "name": "Palais Royal",
+      "x": 471,
+      "y": 311,
+      "is_interchange": true
+    },
+    {
+      "id": 4,
+      "name": "Tuileries",
+      "x": 400,
+      "y": 340,
+      "is_interchange": true
+    },
+    {
+      "id": 5,
+      "name": "Concorde",
+      "x": 329,
+      "y": 311,
+      "is_interchange": false
+    },
+    {
+      "id": 6,
+      "name": "Cité",
+      "x": 300,
+      "y": 240,
+      "is_interchange": false
+    },
+    {
+      "id": 7,
+      "name": "Bastille",
+      "x": 329,
+      "y": 169,
+      "is_interchange": true
+    },
+    {
+      "id": 8,
+      "name": "République",
+      "x": 400,
+      "y": 140,
+      "is_interchange": true
+    },
+    {
+      "id": 9,
+      "name": "Belleville",
+      "x": 471,
+      "y": 169,
+      "is_interchange": false
+    },
+    {
+      "id": 10,
+      "name": "Opéra",
+      "x": 600,
+      "y": 240,
+      "is_interchange": true
+    },
+    {
+      "id": 18,
+      "name": "Nation",
+      "x": 585,
+      "y": 317,
+      "is_interchange": true
+    },
+    {
+      "id": 11,
+      "name": "Saint-Paul",
+      "x": 541,
+      "y": 381,
+      "is_interchange": true
+    },
+    {
+      "id": 12,
+      "name": "Hôtel de Ville",
+      "x": 400,
+      "y": 440,
+      "is_interchange": true
+    },
+    {
+      "id": 19,
+      "name": "Pigalle",
+      "x": 323,
+      "y": 425,
+      "is_interchange": true
+    },
+    {
+      "id": 13,
+      "name": "Rambuteau",
+      "x": 259,
+      "y": 381,
+      "is_interchange": true
+    },
+    {
+      "id": 14,
+      "name": "Pont Neuf",
+      "x": 200,
+      "y": 240,
+      "is_interchange": true
+    },
+    {
+      "id": 20,
+      "name": "Montmartre",
+      "x": 215,
+      "y": 163,
+      "is_interchange": false
+    },
+    {
+      "id": 15,
+      "name": "Madeleine",
+      "x": 259,
+      "y": 99,
+      "is_interchange": true
+    },
+    {
+      "id": 16,
+      "name": "Gare de Lyon",
+      "x": 400,
+      "y": 40,
+      "is_interchange": true
+    },
+    {
+      "id": 17,
+      "name": "Bercy",
+      "x": 541,
+      "y": 99,
+      "is_interchange": true
+    },
+    {
+      "id": 21,
+      "name": "La Défense",
+      "x": 120,
+      "y": 240,
+      "is_interchange": true
+    },
+    {
+      "id": 22,
+      "name": "Château de Vincennes",
+      "x": 680,
+      "y": 240,
+      "is_interchange": false
+    },
+    {
+      "id": 23,
+      "name": "Mairie de Clichy",
+      "x": 400,
+      "y": -40,
+      "is_interchange": false
+    },
+    {
+      "id": 24,
+      "name": "Mairie d'Ivry",
+      "x": 400,
+      "y": 520,
+      "is_interchange": false
+    },
+    {
+      "id": 25,
+      "name": "Pont de Neuilly",
+      "x": 202,
+      "y": 42,
+      "is_interchange": false
+    },
+    {
+      "id": 26,
+      "name": "Gallieni",
+      "x": 598,
+      "y": 438,
+      "is_interchange": false
+    },
+    {
+      "id": 27,
+      "name": "Basilique de Saint-Denis",
+      "x": 598,
+      "y": 42,
+      "is_interchange": true
+    },
+    {
+      "id": 28,
+      "name": "Pont de Sèvres",
+      "x": 202,
+      "y": 438,
+      "is_interchange": true
+    },
+    {
+      "id": 29,
+      "name": "Porte de Vincennes",
+      "x": 760,
+      "y": 240,
+      "is_interchange": false
+    },
+    {
+      "id": 30,
+      "name": "Saint-Mandé",
+      "x": 840,
+      "y": 240,
+      "is_interchange": false
+    },
+    {
+      "id": 31,
+      "name": "Charenton-le-Pont",
+      "x": 620,
+      "y": 75,
+      "is_interchange": false
+    },
+    {
+      "id": 32,
+      "name": "Maisons-Alfort",
+      "x": 700,
+      "y": 55,
+      "is_interchange": false
+    },
+    {
+      "id": 33,
+      "name": "Place d'Italie",
+      "x": 260,
+      "y": 500,
+      "is_interchange": false
+    },
+    {
+      "id": 34,
+      "name": "Corvisart",
+      "x": 200,
+      "y": 555,
+      "is_interchange": false
+    },
+    {
+      "id": 35,
+      "name": "Porte de la Chapelle",
+      "x": 660,
+      "y": -55,
+      "is_interchange": false
+    },
+    {
+      "id": 36,
+      "name": "Saint-Denis Université",
+      "x": 720,
+      "y": -105,
+      "is_interchange": false
+    },
+    {
+      "id": 37,
+      "name": "Porte Dorée",
+      "x": 670,
+      "y": 195,
+      "is_interchange": false
+    },
+    {
+      "id": 38,
+      "name": "Charenton-Écoles",
+      "x": 740,
+      "y": 160,
+      "is_interchange": false
+    },
+    {
+      "id": 39,
+      "name": "Bagneux",
+      "x": 155,
+      "y": 490,
+      "is_interchange": false
+    },
+    {
+      "id": 40,
+      "name": "Villejuif",
+      "x": 400,
+      "y": 595,
+      "is_interchange": false
+    }
+  ],
+  "stationLines": [
+    {
+      "station_id": 21,
+      "line_id": 1,
+      "position": 1
+    },
+    {
+      "station_id": 14,
+      "line_id": 1,
+      "position": 2
+    },
+    {
+      "station_id": 6,
+      "line_id": 1,
+      "position": 3
+    },
+    {
+      "station_id": 1,
+      "line_id": 1,
+      "position": 4
+    },
+    {
+      "station_id": 2,
+      "line_id": 1,
+      "position": 5
+    },
+    {
+      "station_id": 10,
+      "line_id": 1,
+      "position": 6
+    },
+    {
+      "station_id": 22,
+      "line_id": 1,
+      "position": 7
+    },
+    {
+      "station_id": 23,
+      "line_id": 2,
+      "position": 1
+    },
+    {
+      "station_id": 16,
+      "line_id": 2,
+      "position": 2
+    },
+    {
+      "station_id": 8,
+      "line_id": 2,
+      "position": 3
+    },
+    {
+      "station_id": 1,
+      "line_id": 2,
+      "position": 4
+    },
+    {
+      "station_id": 4,
+      "line_id": 2,
+      "position": 5
+    },
+    {
+      "station_id": 12,
+      "line_id": 2,
+      "position": 6
+    },
+    {
+      "station_id": 24,
+      "line_id": 2,
+      "position": 7
+    },
+    {
+      "station_id": 25,
+      "line_id": 3,
+      "position": 1
+    },
+    {
+      "station_id": 15,
+      "line_id": 3,
+      "position": 2
+    },
+    {
+      "station_id": 7,
+      "line_id": 3,
+      "position": 3
+    },
+    {
+      "station_id": 1,
+      "line_id": 3,
+      "position": 4
+    },
+    {
+      "station_id": 3,
+      "line_id": 3,
+      "position": 5
+    },
+    {
+      "station_id": 11,
+      "line_id": 3,
+      "position": 6
+    },
+    {
+      "station_id": 26,
+      "line_id": 3,
+      "position": 7
+    },
+    {
+      "station_id": 27,
+      "line_id": 4,
+      "position": 1
+    },
+    {
+      "station_id": 17,
+      "line_id": 4,
+      "position": 2
+    },
+    {
+      "station_id": 9,
+      "line_id": 4,
+      "position": 3
+    },
+    {
+      "station_id": 1,
+      "line_id": 4,
+      "position": 4
+    },
+    {
+      "station_id": 5,
+      "line_id": 4,
+      "position": 5
+    },
+    {
+      "station_id": 13,
+      "line_id": 4,
+      "position": 6
+    },
+    {
+      "station_id": 28,
+      "line_id": 4,
+      "position": 7
+    },
+    {
+      "station_id": 14,
+      "line_id": 5,
+      "position": 1
+    },
+    {
+      "station_id": 20,
+      "line_id": 5,
+      "position": 2
+    },
+    {
+      "station_id": 7,
+      "line_id": 5,
+      "position": 3
+    },
+    {
+      "station_id": 8,
+      "line_id": 5,
+      "position": 4
+    },
+    {
+      "station_id": 17,
+      "line_id": 5,
+      "position": 5
+    },
+    {
+      "station_id": 10,
+      "line_id": 6,
+      "position": 1
+    },
+    {
+      "station_id": 18,
+      "line_id": 6,
+      "position": 2
+    },
+    {
+      "station_id": 11,
+      "line_id": 6,
+      "position": 3
+    },
+    {
+      "station_id": 12,
+      "line_id": 6,
+      "position": 4
+    },
+    {
+      "station_id": 19,
+      "line_id": 6,
+      "position": 5
+    },
+    {
+      "station_id": 21,
+      "line_id": 7,
+      "position": 1
+    },
+    {
+      "station_id": 28,
+      "line_id": 7,
+      "position": 2
+    },
+    {
+      "station_id": 13,
+      "line_id": 7,
+      "position": 3
+    },
+    {
+      "station_id": 19,
+      "line_id": 7,
+      "position": 4
+    },
+    {
+      "station_id": 12,
+      "line_id": 7,
+      "position": 5
+    },
+    {
+      "station_id": 4,
+      "line_id": 7,
+      "position": 6
+    },
+    {
+      "station_id": 3,
+      "line_id": 7,
+      "position": 7
+    },
+    {
+      "station_id": 2,
+      "line_id": 7,
+      "position": 8
+    },
+    {
+      "station_id": 27,
+      "line_id": 7,
+      "position": 9
+    },
+    {
+      "station_id": 15,
+      "line_id": 8,
+      "position": 1
+    },
+    {
+      "station_id": 16,
+      "line_id": 8,
+      "position": 2
+    },
+    {
+      "station_id": 17,
+      "line_id": 8,
+      "position": 3
+    },
+    {
+      "station_id": 18,
+      "line_id": 8,
+      "position": 4
+    },
+    {
+      "station_id": 10,
+      "line_id": 8,
+      "position": 5
+    },
+    { "station_id": 29, "line_id": 1, "position": 8 },
+    { "station_id": 30, "line_id": 1, "position": 9 },
+    { "station_id": 31, "line_id": 5, "position": 6 },
+    { "station_id": 32, "line_id": 5, "position": 7 },
+    { "station_id": 33, "line_id": 6, "position": 6 },
+    { "station_id": 34, "line_id": 6, "position": 7 },
+    { "station_id": 35, "line_id": 7, "position": 10 },
+    { "station_id": 36, "line_id": 7, "position": 11 },
+    { "station_id": 37, "line_id": 8, "position": 6 },
+    { "station_id": 38, "line_id": 8, "position": 7 },
+    { "station_id": 39, "line_id": 4, "position": 8 },
+    { "station_id": 40, "line_id": 2, "position": 8 }
+  ],
+  "segments": [
+    {
+      "from_station_id": 14,
+      "to_station_id": 21
+    },
+    {
+      "from_station_id": 6,
+      "to_station_id": 14
+    },
+    {
+      "from_station_id": 1,
+      "to_station_id": 6
+    },
+    {
+      "from_station_id": 1,
+      "to_station_id": 2
+    },
+    {
+      "from_station_id": 2,
+      "to_station_id": 10
+    },
+    {
+      "from_station_id": 10,
+      "to_station_id": 22
+    },
+    {
+      "from_station_id": 16,
+      "to_station_id": 23
+    },
+    {
+      "from_station_id": 8,
+      "to_station_id": 16
+    },
+    {
+      "from_station_id": 1,
+      "to_station_id": 8
+    },
+    {
+      "from_station_id": 1,
+      "to_station_id": 4
+    },
+    {
+      "from_station_id": 4,
+      "to_station_id": 12
+    },
+    {
+      "from_station_id": 12,
+      "to_station_id": 24
+    },
+    {
+      "from_station_id": 15,
+      "to_station_id": 25
+    },
+    {
+      "from_station_id": 7,
+      "to_station_id": 15
+    },
+    {
+      "from_station_id": 1,
+      "to_station_id": 7
+    },
+    {
+      "from_station_id": 1,
+      "to_station_id": 3
+    },
+    {
+      "from_station_id": 3,
+      "to_station_id": 11
+    },
+    {
+      "from_station_id": 11,
+      "to_station_id": 26
+    },
+    {
+      "from_station_id": 17,
+      "to_station_id": 27
+    },
+    {
+      "from_station_id": 9,
+      "to_station_id": 17
+    },
+    {
+      "from_station_id": 1,
+      "to_station_id": 9
+    },
+    {
+      "from_station_id": 1,
+      "to_station_id": 5
+    },
+    {
+      "from_station_id": 5,
+      "to_station_id": 13
+    },
+    {
+      "from_station_id": 13,
+      "to_station_id": 28
+    },
+    {
+      "from_station_id": 14,
+      "to_station_id": 20
+    },
+    {
+      "from_station_id": 7,
+      "to_station_id": 20
+    },
+    {
+      "from_station_id": 7,
+      "to_station_id": 8
+    },
+    {
+      "from_station_id": 8,
+      "to_station_id": 17
+    },
+    {
+      "from_station_id": 10,
+      "to_station_id": 18
+    },
+    {
+      "from_station_id": 11,
+      "to_station_id": 18
+    },
+    {
+      "from_station_id": 11,
+      "to_station_id": 12
+    },
+    {
+      "from_station_id": 12,
+      "to_station_id": 19
+    },
+    {
+      "from_station_id": 21,
+      "to_station_id": 28
+    },
+    {
+      "from_station_id": 13,
+      "to_station_id": 19
+    },
+    {
+      "from_station_id": 3,
+      "to_station_id": 4
+    },
+    {
+      "from_station_id": 2,
+      "to_station_id": 3
+    },
+    {
+      "from_station_id": 2,
+      "to_station_id": 27
+    },
+    {
+      "from_station_id": 15,
+      "to_station_id": 16
+    },
+    {
+      "from_station_id": 16,
+      "to_station_id": 17
+    },
+    {
+      "from_station_id": 17,
+      "to_station_id": 18
+    },
+    { "from_station_id": 22, "to_station_id": 29 },
+    { "from_station_id": 29, "to_station_id": 30 },
+    { "from_station_id": 17, "to_station_id": 31 },
+    { "from_station_id": 31, "to_station_id": 32 },
+    { "from_station_id": 19, "to_station_id": 33 },
+    { "from_station_id": 33, "to_station_id": 34 },
+    { "from_station_id": 27, "to_station_id": 35 },
+    { "from_station_id": 35, "to_station_id": 36 },
+    { "from_station_id": 10, "to_station_id": 37 },
+    { "from_station_id": 37, "to_station_id": 38 },
+    { "from_station_id": 28, "to_station_id": 39 },
+    { "from_station_id": 24, "to_station_id": 40 }
+  ],
+  "startStationId": 1,
+  "endStationId": 16
+}

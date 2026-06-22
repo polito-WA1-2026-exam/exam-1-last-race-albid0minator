@@ -1,7 +1,6 @@
 import cors from 'cors';
 import express from 'express';
 import session from 'express-session';
-import morgan from 'morgan';
 import passport from 'passport';
 import { configurePassport } from './config/passport.js';
 import authRouter from './routes/auth.js';
@@ -22,7 +21,6 @@ app.use(
   })
 );
 app.use(express.json());
-app.use(morgan('dev'));
 app.use(
   session({
     secret: SESSION_SECRET,
