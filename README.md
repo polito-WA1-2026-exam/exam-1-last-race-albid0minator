@@ -132,7 +132,7 @@ The committed database contains 8 lines, 40 stations (19 interchange stations = 
 | Bob   | b@b.it  | bbb      |
 | Carol | c@c.it  | ccc      |
 
-Alice, Bob, and Carol are pre-seeded users. Alice and Bob have already played games in the database.
+Alice, Bob, and Carol are pre-seeded users. All three have already played games in the database.
 
 ---
 
